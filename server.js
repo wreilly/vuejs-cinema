@@ -43,6 +43,8 @@ app.get('/offline_api', function(req, res) {
 app.listen(process.env.PORT, function () {
   console.log(`Example app listening on port ${process.env.PORT}!`);
   if (process.env.NODE_ENV === 'development') {
-    require('open')(`http://localhost:${process.env.PORT}`);
+      // ORIG:    require('open')(`http://localhost:${process.env.PORT}`);
+      // WR__:
+    require('open')(`http://127.0.0.1:${process.env.PORT}`); // "firefox" << works. "chrome" did not. oh well. Default goes to my (default) browser Opera...
   }
 });

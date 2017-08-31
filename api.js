@@ -7,7 +7,8 @@ moment.tz.setDefault("UTC");
 
 // Axios
 const $http = axios.create({
-  baseURL: `http://localhost:${process.env.PORT}/offline_api`,
+    // baseURL: `http://localhost:${process.env.PORT}/offline_api`,
+    baseURL: `http://127.0.0.1:${process.env.PORT}/offline_api`,
 });
 
 function generateSessions(id) {

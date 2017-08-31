@@ -21,7 +21,13 @@
     <div id="overview">
         <div id="main">
             <movie-list></movie-list>
-            <movie-filter></movie-filter>
+
+            <!--  Hmm.
+            Put the v-on: custom *event listener* on HERE, the "<movie-filter>" component element,
+            NOT (as I had it) above on the Root instance's HTML parent div(s) to this (i.e., id="main", nor id="overview). Tsk, tsk.
+
+            Although: Do note that the *method* this movie-filter component calls, *IS* a method on the Root instance (not a method on the movie-filter component. Cheers. texas -->
+            <movie-filter v-on:check-filter-parent-event="checkFilterGrandParentMethod"></movie-filter>
         </div>
     </div>
 </div>

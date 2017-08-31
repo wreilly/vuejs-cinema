@@ -10,6 +10,12 @@ new Vue({
         msg: 'Hello world'
     }
 */
+    methods: {
+/* YES. This belongs here on the Root instance. Bon. */
+      checkFilterGrandParentMethod(category, title, checked){
+          console.log('checkFilterGrandParentMethod!', category, ' | ', title, ' | ', checked )
+      }
+    },
     components: {
         'movie-list': {
             template: `<div id="movie-list">
@@ -52,9 +58,31 @@ v-for="(dataGenre, gkey, indexWhyNot) in dataGenres"
 v-bind:theValueInEachGenre="dataGenre"
 v-bind:thatKey="gkey"
 v-bind:thatIndex="indexWhyNot"
-v-bind:key="gkey"></check-filter>
+v-bind:key="gkey"
+v-on:check-filter-child-event="checkFilterParentMethod">
+</check-filter>
 </div>
 </div>`,
+            methods: {
+/*
+                NO. This doesn't go here. Goes on the Root instance!
+                checkFilterGrandParentMethod(myLoad){
+                    console.log('checkFilterGrandParentMethod: myLoad: ', myLoad)
+                },
+*/
+                checkFilterParentMethod(category, title, checked) {
+//                    checkFilterParentMethod(myLoad) {
+                  // Yes. "myLoad" does get the "theValueInEachGenre"
+                    // Above is true when we passed a single argument/
+                    // But no longer true that we're passing 3 of them.
+
+                    // payload is an Array < Yeah, but that array does NOT automagically make your 3 passed-in args into the 3 elements in the array. Nope.
+                    // First element is hard-coded filter type: "genre"
+                    // Second element is the title/name/value of the genre (e.g. "Comedy")
+                  console.log('checkFilterParentMethod!', category, ' | ', title, ' | ', checked )
+                  this.$emit('check-filter-parent-event', category, title, checked) // pass it on up...
+              }
+            },
             components: {
                 // SUB-COMPONENT!
                 'check-filter': {
@@ -65,10 +93,11 @@ v-bind:key="gkey"></check-filter>
                       }
                     },
                     // single-quotes needed around hyphenated CSS key ... 'check-filter'
+                    // v-on:click="checked = !checked"> << Moved out of attribute, to the method
                     template: `<div v-bind:class=" { 
 'check-filter': true, 
 active: checked  } " 
-v-on:click="checked = !checked">
+v-on:click="checkFilterChildMethod">
 <!-- This "checkbox" is a sort of custom designed CSS ginned-up HTML Form Checkbox looking thing... -->
 <span class="checkbox"></span>
 
@@ -76,7 +105,26 @@ v-on:click="checked = !checked">
 <!--{{ theValueInEachGenre }}</span>-->
 {{ thatIndex }}. {{ thatKey }} : <strong>
 {{ theValueInEachGenre }} </strong></span>
-</div>`
+</div>`,
+                     methods: {
+                        checkFilterChildMethod() {
+                            this.checked = !this.checked
+                           // console.log('this.dataGenre', this.dataGenre) // Nope. undefined
+                            console.log('this.theValueInEachGenre', this.theValueInEachGenre) // Yep! Crime
+                            // Per Instructor code, we'll insert a first parameter here to "hard-code" the "type" of filter: "genre" Lecture 77 ~03:55:
+                            /* With custom event, we get some "payload" handling of arguments:
+
+                             payload:Array[3]
+                             0:"genre"
+                             1:"Animation"
+                             2:true
+
+                             But I think I cannot access that 'payload' variable in my code. Hmm. Okay.
+                             I need to deal with the 3 arguments on their own, not as elements in an Array. All righty.
+                             */
+                            this.$emit('check-filter-child-event', 'genre', this.theValueInEachGenre, this.checked) // Yes
+                        }
+                    }
                 }
             }
         }

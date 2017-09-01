@@ -20,7 +20,11 @@
     </div>
     <div id="overview">
         <div id="main">
-            <movie-list></movie-list>
+            <!-- Dumkoppff. You've got v-bind BASS-ACKWARDS:
+            <movie-list v-bind:genres="genresForList"></movie-list>-->
+            <!--  Vue.js sez don't use camelCase for that genresForList Tsk, tsk. -->
+            <!--<movie-list v-bind:genres-my-list="genre"></movie-list>-->
+            <movie-list v-bind:genresmylist="genre"></movie-list>
 
             <!--  Hmm.
             Put the v-on: custom *event listener* on HERE, the "<movie-filter>" component element,

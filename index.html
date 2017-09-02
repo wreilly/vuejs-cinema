@@ -24,7 +24,14 @@
             <movie-list v-bind:genres="genresForList"></movie-list>-->
             <!--  Vue.js sez don't use camelCase for that genresForList Tsk, tsk. -->
             <!--<movie-list v-bind:genres-my-list="genre"></movie-list>-->
-            <movie-list v-bind:genresmylist="genre"></movie-list>
+
+            <!-- Cain't get it right now can you?
+                    "vue.common.js?e881:487 [Vue tip]: Prop "moviesformovielist" is passed to component <MovieList>, but the declared prop name is "moviesForMovieList". Note that HTML attributes are case-insensitive and camelCased props need to use their kebab-case equivalents when using in-DOM templates. You should probably use "movies-for-movie-list" instead of "moviesForMovieList"."
+
+            -->
+            <movie-list
+                    v-bind:genresmylist="genre"
+            v-bind:movies-for-movie-list="moviesFromAPI"></movie-list>
 
             <!--  Hmm.
             Put the v-on: custom *event listener* on HERE, the "<movie-filter>" component element,

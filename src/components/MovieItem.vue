@@ -1,6 +1,18 @@
 <template>
-    <div>
-        Here in MovieItem, FOOB our movie has a title: {{ movieItemThingFooBar.movie.Title }}
+    <div class="movie">
+        <p>
+        Here in MovieItem, FOOB2 our movie has a title: {{ movieItemThingFooBar.Title }}
+        </p>
+        <div class="movie-col-left">
+            <img v-bind:src="movieItemThingFooBar.Poster" alt="">
+        </div>
+        <div class="movie-col-right">
+            <div class="movie-title">
+                <h2>{{ movieItemThingFooBar.Title }}</h2>
+                <span class="movie-rating">{{ movieItemThingFooBar.Rated }}</span>
+                &nbsp; <span class="movie-rating">{{ movieItemThingFooBar.imdbRating }}</span>
+            </div>
+        </div>
     </div>
 </template>
 

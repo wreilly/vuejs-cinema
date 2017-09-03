@@ -20,15 +20,26 @@
     </div>
     <div id="overview">
         <div id="main">
-            <!-- Dumkoppff. You've got v-bind BASS-ACKWARDS:
+            <!-- . You've got v-bind backwards.
             <movie-list v-bind:genres="genresForList"></movie-list>-->
             <!--  Vue.js sez don't use camelCase for that genresForList Tsk, tsk. -->
             <!--<movie-list v-bind:genres-my-list="genre"></movie-list>-->
 
-            <!-- Cain't get it right now can you?
+            <!--
                     "vue.common.js?e881:487 [Vue tip]: Prop "moviesformovielist" is passed to component <MovieList>, but the declared prop name is "moviesForMovieList". Note that HTML attributes are case-insensitive and camelCased props need to use their kebab-case equivalents when using in-DOM templates. You should probably use "movies-for-movie-list" instead of "moviesForMovieList"."
 
             -->
+
+            <!--
+            What (The Hell) is "genre", please:
+            (STUPID NAME)
+       // Array 'genre' will contain the "title" (ooffaa - stupid word) of the GENRE .
+        // NO. >>the movies that match the CHECKED genres...
+
+        // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
+        genre: [], // sent as props down to movie-list as genresmylist.
+            -->
+
             <movie-list
                     v-bind:genresmylist="genre"
             v-bind:movies-for-movie-list="moviesFromAPI"></movie-list>

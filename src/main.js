@@ -17,7 +17,8 @@ new Vue({
     el: '#app',
     data: {
         moviesFromAPI: [],
-        // Array 'genre' will contain the movies that match the CHECKED genres...
+        // Array 'genre' will contain the "title" (ooffaa - stupid word) of the GENRE .
+        // NO. >>the movies that match the CHECKED genres...
         // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
         genre: [], // sent as props down to movie-list as genresmylist.
         time: ['notempty-time']

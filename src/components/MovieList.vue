@@ -2,6 +2,9 @@
     <div id="movie-list">
 <!--  WR__ FIRST GO:
 
+(REVERTED FILE: 2017-09-05
+https://github.com/wreilly/vuejs-cinema/blob/master/src/components/MovieList.vue )
+
         <div v-for="movie in filteredMovies" class="movie">
             <p>
                 Filtered Movie! {{ movie.movie.Title }}
@@ -22,9 +25,42 @@ Cheers.
          (btw: move the class="movie" from here down to the MovieItem.vue. Bon.)
          Cheers.
          -->
-        <movie-item v-for="movie in filteredMovies" v-bind:movie-item-thing-foo-bar="movie.movie"></movie-item>
-         <div>
 
+        <div>
+            <div v-if="moviesForMovieList.length === 0" class="no-results">
+                <p>Loading yer films...!</p>
+            </div>
+            <div v-else>
+                <div v-if="filteredMovies.length === 0" class="no-results">
+                    <p>Too stringent, my friend! Let up, let the movies IN to your life!</p>
+                    <p>You're insisting on:</p>
+                    <ul>
+                        <li v-for="genremylist in genresmylist">{{ genremylist }}</li>
+                    </ul>
+                </div>
+                <div v-else>
+                    <movie-item v-for="movie in filteredMovies" v-bind:movie-item-thing-foo-bar="movie.movie"></movie-item>
+                </div>
+            </div>
+        </div>
+<!-- INSTRUCTOR CODE MODE:  uses v-if-else   very groovy
+
+           <div v-if="filteredMovies.length">
+              <movie-item v-for="movie in filteredMovies" v-bind:movie-item-thing-foo-bar="movie.movie"></movie-item>
+           </div>
+           <div v-else-if="moviesForMovieList.length">
+           // << tiny bit counterintuitive, that your movies array is not empty but we are telling them "No results!"  Here's why:
+           // If 1) filtered is empty, but 2) movies is NOT empty, then
+           //   3) it is time to tell user "No results" on your wild & crazy user filtering:
+             <p>No results!</p>
+           </div>
+           <div v-else>
+           // filtered is empty AND movies itself is empty, so: Loading!
+              <p>Loading...</p>
+           </div>
+-->
+
+        <div>
             <p>Hey Checked Genres Why Not</p>
             <div v-for="genre in genresmylist">Checked Genre Title: {{genre}}</div>
         </div>
@@ -152,6 +188,7 @@ But if Checked is History, should be included
           }, // /moviePassesGenreFilter()
 
 /* Hmm. Nah. WR__ approach ... Hmm. */
+/* NOT USED:
             moviePassesOneGenreMatches(movieGenreToTest) {
               console.log('whoa 55 movieGenreToTest: ', movieGenreToTest)
               console.log('whoa 44 this.genresmylist: ', this.genresmylist)
@@ -159,8 +196,10 @@ But if Checked is History, should be included
                   console.log('Yu-huh!')
                   return true
               }
+
 //              return this.genresmylist.includes(movieGenreToTest)
           }
+*/
         },
         computed: {
             filteredMovies() {

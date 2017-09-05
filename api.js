@@ -4,6 +4,7 @@ const axios = require('axios');
 const async = require('async');
 const moment = require('moment-timezone');
 moment.tz.setDefault("UTC");
+// Client (/src/main.js) ALSO uses same timezone default: "UTC"
 
 // Axios
 const $http = axios.create({

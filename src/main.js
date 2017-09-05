@@ -12,16 +12,32 @@ Vue.use(VueResource)
 // E.g. ( ? )
 // Vue.http.options.root = 'http://127.0.0.1:8000/' // ?
 
+/* Interesting.
+LESSON 90 ~05:59
+- moment.js --- 3rd party, not "integrated" with Vue.js (like Vue-Resource is, for example).
+- Use this JavaScript property definition business here, to create a referenceable thing/property/whatever, that all our Components can use.
+- Thus avoid needing to import moment.js to each component individually (MBU).
+- Calling your thing/property "$moment" is naming convention (that leading '$').
+- this.$root is (I guess) Vue.js reserved word (or similar) to speak of the Root Component. Okay.
+- JavaScript's Object.defineProperty() and that get(){} are how you create this thing.
+- You create it on the Vue object's prototype.
+Cheers.
+ */
+import moment from 'moment-timezone'
+moment.tz.setDefault("UTC")
+// Server (/api.js) ALSO uses same timezone default: "UTC"
+Object.defineProperty(Vue.prototype, '$moment', { get() { return this.$root.moment } })
 
 new Vue({
     el: '#app',
     data: {
-        moviesFromAPI: [],
         // Array 'genre' will contain the "title" (ooffaa - stupid word) of the GENRE .
         // NO. >>the movies that match the CHECKED genres...
         // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
         genre: [], // sent as props down to movie-list as genresmylist.
-        time: ['notempty-time']
+        time: ['notempty-time'],
+        moviesFromAPI: [],
+        moment
     },
     components: {
         'movie-list': MovieList,

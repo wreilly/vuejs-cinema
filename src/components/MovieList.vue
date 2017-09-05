@@ -288,6 +288,14 @@ But if Checked is History, should be included
                  ------------
                 ------------
                  */
-        } // /computed()
+        }, // /computed()
+        created() {
+            // console.log('Moment object, from Root Component, seen here in Child Component MovieList.vue (without importing Moment.js) ', this.$moment)
+            /*
+             Moment object, from Root Component, seen here in Child Component MovieList.vue (without importing Moment.js)  ƒ hooks () {
+             return hookCallback.apply(null, arguments);
+             }
+             */
+        }
     }
 </script>

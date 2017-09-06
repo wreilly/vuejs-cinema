@@ -13,13 +13,18 @@
                 &nbsp; <span class="movie-rating">{{ movieItemThingFooBar.imdbRating }}</span>
                 <div class="movie-sessions">
                     <div v-for="movieSession in filteredMovieSessionsByDayComputed" class="session-time-wrapper">
+<!--  ALSO WORKS:
+                        <div v-for="movieSession in filteredMovieSessionsByDayMethod(movieSessions)" class="session-time-wrapper">
+-->
                         <div class="session-time">
                         {{ gimmeMovieSessionTime(movieSession) }}</div>
                     </div>
                 </div>
+<!-- No Longer Needed:
                 <ul>
                     <li v-for="movieSession in movieSessions">{{ movieSession.time }}</li>
                 </ul>
+-->
             </div>
         </div>
     </div>
@@ -129,7 +134,7 @@
                     */
 
                     var trueOrFalseOrWhat01 = this.$root.moment(eachMovieSession.time).isSame(this.todayForItem, 'day')
-                    console.log('01 Veddy interesting. trueOrFalseOrWhat01 is: ', trueOrFalseOrWhat01)
+                    console.log('01 Veddy interesting. trueOrFalseOrWhat01 is: ', trueOrFalseOrWhat01) // yep. true or false
 
 
 /*
@@ -141,7 +146,9 @@
                             // Hmm, are you Not Supposed To Put Moment.isSame() Inside An IF() ??
                         console.log('YEAH - METHOD')
                         var trueOrFalseOrWhat02 = this.$root.moment(eachMovieSession.time).isSame(this.todayForItem, 'day')
-                        console.log('02 Veddy interesting. trueOrFalseOrWhat02 is: ', trueOrFalseOrWhat02)
+                        console.log('02 Veddy interesting. trueOrFalseOrWhat02 is: ', trueOrFalseOrWhat02) // yep. true or false
+
+                        // FINALLY, THE ACTUAL TEST:
                         return this.$root.moment(eachMovieSession.time).isSame(this.todayForItem, 'day')
                     } else {
                         console.log('NOPE - METHOD')

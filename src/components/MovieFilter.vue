@@ -1,13 +1,36 @@
 <template>
     <div id="movie-filter">
         <h2>Filter results</h2>
+        <h3>By time of day:</h3>
+        <div class="filter-group">
+<!--
+            // N.B. Lesson 93. We genericize this sub-component to accept both Genres and Times, by calling the string value for each simply 'title' - not, 'theValueInEachGenre' and 'theValueInEachTime'
+-->
+
+            <check-filter
+                    v-for="(dataTime, tkey, indexWhyNot02) in dataTimes"
+                    v-bind:theValueInEachTime="dataTime"
+                    v-bind:thatTKey="tkey"
+                    v-bind:thatIndex01="indexWhyNot02"
+
+                    v-bind:key="tkey"
+
+
+ v-bind:title="dataTime"
+                    v-on:check-filter-child-event-time="checkFilterParentMethodTime">
+            </check-filter>
+        </div>
+        <h3>By genre:</h3>
         <div class="filter-group">
             <check-filter
                     v-for="(dataGenre, gkey, indexWhyNot) in dataGenres"
                     v-bind:theValueInEachGenre="dataGenre"
                     v-bind:thatKey="gkey"
                     v-bind:thatIndex="indexWhyNot"
+
                     v-bind:key="gkey"
+
+ v-bind:title="dataGenre"
                     v-on:check-filter-child-event="checkFilterParentMethod">
             </check-filter>
         </div>
@@ -16,12 +39,15 @@
 
 <script>
     import myFrozenGenres from '../util/genres'
+    import myFrozenTimes from '../util/times'
+
     import CheckFilter from './CheckFilter.vue'
 
     export default {
         data: function () {
             return {
-                dataGenres: myFrozenGenres
+                dataGenres: myFrozenGenres,
+                dataTimes: myFrozenTimes
             }
         },
         methods: {
@@ -33,6 +59,7 @@
         },
         components: {
             // SUB-COMPONENT!
+            // We use for 2 purposes: 1) Genres, 2) Times
 //            CheckFilter: 'check-filter' // << Nope! Dumkoppff!
             'check-filter': CheckFilter
         }

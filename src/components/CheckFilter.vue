@@ -7,13 +7,17 @@ active: checked  } "
 
         <span class="check-filter-title">
 {{ thatIndex }}. {{ thatKey }} : <strong>
-{{ theValueInEachGenre }} </strong></span>
+<!--{{ theValueInEachGenre }}-->
+{{ title }}
+        </strong></span>
     </div>
 </template>
 
 <script>
     export default {
-        props: [ 'theValueInEachGenre', 'thatKey', 'thatIndex'],
+        // N.B. Lesson 93. We genericize this sub-component to accept both Genres and Times, by calling the string value for each simply 'title' - not, 'theValueInEachGenre' and 'theValueInEachTime'
+        // Tres bien.
+        props: [ 'theValueInEachGenre', 'thatKey', 'thatIndex', 'title'],
         data: function() {
             return {
                 checked: false

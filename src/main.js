@@ -37,7 +37,8 @@ new Vue({
         genre: [], // sent as props down to movie-list as genresmylist.
         time: ['notempty-time'],
         moviesFromAPI: [],
-        moment
+        moment, // << 3rd party object, turned into a data property we can sling around in our app. Who knew.
+        day: moment() //.format("YYYY MM DD") // current day, "today"!
     },
     components: {
         'movie-list': MovieList,

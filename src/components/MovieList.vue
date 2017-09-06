@@ -39,7 +39,12 @@ Cheers.
                     </ul>
                 </div>
                 <div v-else>
-                    <movie-item v-for="movie in filteredMovies" v-bind:movie-item-thing-foo-bar="movie.movie"></movie-item>
+                    <div>Today! {{ todayForList }}</div>
+                    <movie-item
+                            v-for="movie in filteredMovies"
+                            v-bind:movie-item-thing-foo-bar="movie.movie"
+                    v-bind:movie-sessions="movie.sessions"
+                    v-bind:today-for-item="todayForList"></movie-item>
                 </div>
             </div>
         </div>
@@ -90,7 +95,7 @@ Cheers.
     genre: [], // sent as props down to movie-list as genresmylist.
 */
 
-    props: ['genresmylist', 'moviesForMovieList' ],
+    props: ['genresmylist', 'moviesForMovieList', 'todayForList' ],
         data: function() {
             return {
                 /* Super-Duper-Seded by 'movies-for-movie-list'

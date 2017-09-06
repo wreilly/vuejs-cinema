@@ -35,7 +35,7 @@ new Vue({
         // NO. >>the movies that match the CHECKED genres...
         // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
         genre: [], // sent as props down to movie-list as genresmylist.
-        time: ['notempty-time'],
+        time: [], // ['notempty-time'],
         moviesFromAPI: [],
         moment, // << 3rd party object, turned into a data property we can sling around in our app. Who knew.
         day: moment() //.format("YYYY MM DD") // current day, "today"!
@@ -46,6 +46,11 @@ new Vue({
     },
     methods: {
         /* YES. This method belongs here on the Root instance. Bon. */
+        /*
+        - category is type of category: 'genre' or 'time'
+        - title is name of a category value: 'Comedy' or 'Crime', or 'After 6 pm'
+        - checked is Boolean: true or false
+         */
         checkFilterGrandParentMethod(category, title, checked){
             console.log('checkFilterGrandParentMethod!', category, ' | ', title, ' | ', checked ) // Yep.
             // checkFilterGrandParentMethod! genre  |  Animation  |  true
@@ -59,11 +64,14 @@ new Vue({
 //            console.log('hey what -02- this[genre] ', this[genre])
             if (checked) {
                 // Put 'er in!
+                // Nice: already generalized. Works for both 'genre' and 'time'. Tres bien.
                 this[category].push(title)
                 console.log('INSIDE IF hey what this[category] ', this[category])
             } else {
                 // Take 'er out!
                 // Presumably it IS in there...
+
+                // This is working for both genre and time. See Vue Chrome Extension :o)
 
                 // let index = this[category].indexOf(title) << Instructor code way
 

@@ -17,7 +17,9 @@
 
 
  v-bind:title="dataTime"
-                    v-on:check-filter-child-event-time="checkFilterParentMethodTime">
+                    category="time"
+
+                    v-on:check-filter-child-event="checkFilterParentMethod">
             </check-filter>
         </div>
         <h3>By genre:</h3>
@@ -31,6 +33,8 @@
                     v-bind:key="gkey"
 
  v-bind:title="dataGenre"
+                    category="genre"
+
                     v-on:check-filter-child-event="checkFilterParentMethod">
             </check-filter>
         </div>
@@ -51,6 +55,11 @@
             }
         },
         methods: {
+            /*
+             - category is type of category: 'genre' or 'time'
+             - title is name of a category value: 'Comedy' or 'Crime', or 'After 6 pm'
+             - checked is Boolean: true or false
+             */
             checkFilterParentMethod(category, title, checked)
             {
                 console.log('checkFilterParentMethod!', category, ' | ', title, ' | ', checked)

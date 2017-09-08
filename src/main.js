@@ -35,7 +35,7 @@ new Vue({
         // NO. >>the movies that match the CHECKED genres...
         // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
         genre: [], // sent as props down to movie-list as genresmylist.
-        time: [], // ['notempty-time'],
+        time: [], // e.g. ['Before 6pm'] // ['notempty-time'],
         moviesFromAPI: [],
         moment, // << 3rd party object, turned into a data property we can sling around in our app. Who knew.
         day: moment() //.format("YYYY MM DD") // current day, "today"!

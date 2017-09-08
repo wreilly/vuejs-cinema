@@ -11,6 +11,10 @@
                 <h2>{{ movieItemThingFooBar.Title }}</h2>
                 <span class="movie-rating">{{ movieItemThingFooBar.Rated }}</span>
                 &nbsp; <span class="movie-rating">{{ movieItemThingFooBar.imdbRating }}</span>
+                <!--
+// NOT USING THE "filtered...METHOD"
+// USING INSTEAD (equivalent) "filtered...COMPUTED" below
+                -->
                 <div class="movie-sessions">
                     <div v-for="movieSession in filteredMovieSessionsByDayComputed" class="session-time-wrapper">
 <!--  ALSO WORKS:
@@ -47,7 +51,8 @@
                 return this.$moment(movieSession.time).format("h:mm A")
             },
             /* ********************* */
-
+// NOT USING THIS "filtered...METHOD"
+// USING INSTEAD (equivalent) "filtered...COMPUTED" below
             filteredMovieSessionsByDayMethod(movieSessions)  {
 
                 console.log('$$$$ **** this ? METHOD ', this)
@@ -180,7 +185,9 @@ YES >> 'this' is STILL the current Vue Component. Not the root etc. Okay.
             filteredMovieSessionsByDayComputed: function(wholeDamnedThing)  {
 */
                 // ES5 - 02
-                filteredMovieSessionsByDayComputed: function()  {
+// NOT USING THE "filtered...METHOD" (above)
+// USING INSTEAD this (equivalent) "filtered...COMPUTED" here:
+            filteredMovieSessionsByDayComputed: function()  {
 
         // Hard-coded for now to "today"
                 console.log('$$$$ **** this ? COMPUTED ', this) // undefined (!)
@@ -242,10 +249,10 @@ YES >> 'this' is STILL the current Vue Component. Not the root etc. Okay.
  Below block of code (ES6) uses 'wholeDamnedThing' to do so.
 */
                         var todaysMovieSessions = this.movieSessions.filter((eachMovieSession) => {
-                    var todayForItemYyyyMmDd = this.$root.moment(this.todayForItem).format('YYYY MM DD')
-                    var eachYyyyMmDd = this.$root.moment(eachMovieSession.time).format('YYYY MM DD')
-                    console.log('eachYyyyMmDd: ', eachYyyyMmDd)
-                    console.log('todayForItemYyyyMmDd : ', todayForItemYyyyMmDd)
+//                    var todayForItemYyyyMmDd = this.$root.moment(this.todayForItem).format('YYYY MM DD')
+//                    var eachYyyyMmDd = this.$root.moment(eachMovieSession.time).format('YYYY MM DD')
+//                    console.log('eachYyyyMmDd: ', eachYyyyMmDd)
+//                    console.log('todayForItemYyyyMmDd : ', todayForItemYyyyMmDd)
 
 
 
@@ -260,8 +267,13 @@ Here in a Child Component, we can refer to the 'moment' object here in the app o
   -- '$moment' is a defined property we set up in main.js, to be used by any Vue Component, to "get" that moment object off the (root) Vue prototype
 */
                             // Both ROOT and NON-ROOT return same object: Good.
-                            console.log('ROOT^^^^ this.$root.moment(eachMovieSession.time) ', this.$root.moment(eachMovieSession.time))
-                            console.log('NON-ROOT^^^^ this.$moment(eachMovieSession.time) ', this.$moment(eachMovieSession.time))
+//                            console.log('ROOT^^^^ this.$root.moment(eachMovieSession.time) ', this.$root.moment(eachMovieSession.time))
+                            console.log('NON-ROOT ABC ^^^^ this.$moment(eachMovieSession.time) ', this.$moment(eachMovieSession.time))
+                            console.log('this.todayForItem (Moment object hey?) JSON.parse(JSON.stringify(this.todayForItem))): ', JSON.parse(JSON.stringify(this.todayForItem)))
+                            /*
+                             this.todayForItem (Moment object hey?) JSON.parse(JSON.stringify(this.todayForItem))):  2017-09-07T17:21:26.208Z
+                            */
+                            console.log('NON-ROOT XYZ ^^^^ this.$moment(this.todayForItem) ', this.$moment(this.todayForItem))
                             /*
                              ROOT^^^^ this.$root.moment...
                              NON-ROOT^^^^ this.$moment(eachMovieSession.time)
@@ -281,17 +293,31 @@ Here in a Child Component, we can refer to the 'moment' object here in the app o
 
                              */
 
-                    console.log('#### this.$root.moment(this.todayForItem) ', this.$root.moment(this.todayForItem))
+//                    console.log('#### this.$root.moment(this.todayForItem) ', this.$root.moment(this.todayForItem))
 
                             // https://momentjs.com/docs/#/query/is-same/
-                    if (this.$root.moment(eachMovieSession.time).isSame(this.todayForItem), 'day') {
+//                            https://stackoverflow.com/questions/25734743/moment-js-return-the-current-timestamp
+                            // Just use default .moment() to get "today"
+                           // (faintly) "h'rrah!" (faintly) Works. bit of phew
+//                  // YES:          if (this.$moment(eachMovieSession.time).isSame(this.$moment(), 'day')) {
+                   // YES:         // Flip it! (bit more elegant) Also works
+                            if (this.$moment().isSame(eachMovieSession.time, 'day')) {
+                  // NO:          if (this.$moment(eachMovieSession.time).isSame(this.todayForItem), 'day') {
                         // This IF check is NOT WORKING
                         // ALL items are passing. Not right.
                         // Hmm, are you Not Supposed To Put Moment.isSame() Inside An IF() ??
                         console.log('YEAH - COMPUTED')
 
-                        return this.$root.moment(eachMovieSession.time).isSame(this.todayForItem, 'day')
-//                        return true
+//                                return this.$root.moment(eachMovieSession.time).isSame(this.todayForItem, 'day')
+                       // YES:        return this.$moment(eachMovieSession.time).isSame(this.$moment(), 'day')
+                                // Flip it!
+//                                return this.$moment().isSame(eachMovieSession.time, 'day')
+                                // Since we did the test above in the if() statement, here we can just return true:
+                        return true
+                    } else {
+                        console.log('*******************************')
+                        console.log('huh, we NEVER see this line')
+                        console.log('*******************************')
                     }
 /* WR__ INITIAL APPROACH
 IN LIEU OF MOMENT.ISSAME()

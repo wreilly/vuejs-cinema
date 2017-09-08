@@ -26,7 +26,7 @@ active: checked  } "
         methods: {
             checkFilterChildMethod() {
                 this.checked = !this.checked
-                console.log('this.theValueInEachGenre', this.theValueInEachGenre)
+               // console.log('this.theValueInEachGenre', this.theValueInEachGenre)
                 // Yep! Crime
                 // Now, generalize to 'title' (to handle both 'genre' and 'time'
                 console.log('this.title', this.title)
@@ -56,7 +56,7 @@ active: checked  } "
                  - checked is Boolean: true or false
                  */
 
-                this.$emit('check-filter-child-event', this.category, this.title, this.checked, this.theValueInEachGenre) // Yes
+                this.$emit('check-filter-child-event', this.category, this.title, this.checked, this.theValueInEachGenre) // N.B. Last param here is "dropped on the floor" = not used by the called method. Okay, no biggie.
             }
         }
     }

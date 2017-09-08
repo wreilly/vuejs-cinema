@@ -62,11 +62,12 @@ new Vue({
             console.log('hey what -03- this["genre"] ', this["genre"])
 // Nope. Fails. genre is not a var, kid.
 //            console.log('hey what -02- this[genre] ', this[genre])
+            console.log('hey what -04- this["time"] ', this["time"])
             if (checked) {
                 // Put 'er in!
                 // Nice: already generalized. Works for both 'genre' and 'time'. Tres bien.
                 this[category].push(title)
-                console.log('INSIDE IF hey what this[category] ', this[category])
+                console.log('INSIDE IF CHECKED :o) hey what this[category] ', category + ' - ' + this[category])
             } else {
                 // Take 'er out!
                 // Presumably it IS in there...

@@ -38,10 +38,13 @@
 
         // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
         genre: [], // sent as props down to movie-list as genresmylist.
+
+        LESSON 94. Time to add the time[] array to props passing here (e.g. ['Before 6 pm']   Following odd naming convention of mine, calling it timesmylist. Cheers.
             -->
 
             <movie-list
                     v-bind:genresmylist="genre"
+                    v-bind:timesmylist="time"
             v-bind:movies-for-movie-list="moviesFromAPI"
             v-bind:today-for-list="day"></movie-list>
 

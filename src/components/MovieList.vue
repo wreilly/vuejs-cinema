@@ -75,6 +75,7 @@ Cheers.
 <script>
     import myFrozenGenres from '../util/genres'
     import MovieItem from './MovieItem.vue'
+    import myFrozenTimes from '../util/times' // << plural. (cf. time singular, array in main.js data: {})
 
     export default {
         /* Ah. Problem. (again)
@@ -219,8 +220,11 @@ But if Checked is History, should be included
 */
 
 
+/* **************************************** */
             sessionPassesTimeFilter(session) {
-                // Invoked by find(), on movie.sessions Array; passes one session at a time                console.log('!! session is ', session)
+/* **************************************** */
+                // Invoked by find(), on movie.sessions Array; passes one session at a time
+                // console.log('!! session is ', session)
                 /*
                  !! session is  {__ob__: Observer}
                    id: "tt1172203_0"
@@ -229,10 +233,25 @@ But if Checked is History, should be included
                  */
 
                 // initial testing:
-                // short circuit other testing:
+                // (short circuit other testing)
                // return true
 
                 console.log('wtf -02-SESSIONSFILTER- is in this.timesmylist ', this.timesmylist)
+
+                /*  LESSON 94 ~08:52
+                $$$$   INSTRUCTOR CODE (!) $$$$$$$$$$$$$$$$
+
+                if (!this.day.isSame(this.$moment(session.time), 'day')) {
+                    return false;
+                } else if (this.time.length === 0 || this.time.length === 2) {
+                    return true
+                } else if (this.time[0] === times.AFTER_6PM) {
+                    return this.$moment(session.time).hour() >= 18
+                } else {
+                    return this.$moment(session.time).hour() < 18
+                }
+                $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+     */
 
                 /* Bit o' ~pseudocode~spec~ sorta: 01
                 0) movie.sessions contains lots of sessions, over many days
@@ -273,23 +292,77 @@ But if Checked is History, should be included
                 But once that movie item is being displayed, it is going to display all its information about sessions.
                 (It is NOT going to show you only the sessions for the timeframe you indicated. Not going to show you only the "Before 6 pm" sessions, for example. Bon.)
                 */
-                if (this.$moment().isSame(session.time, 'day')) {
-// YAH. SAME:   if (this.$root.moment().isSame(session.time, 'day')) {
-                    console.log('SAME AS TODAY BABY')
-                    console.log('session.time: (just as String) ', session.time)
-                    return true
-                } else {
+
+
+                /* "todayForList"
+                (and, over in MovieItem.vue - "todayForItem")
+                These are Moment objects.
+                So you can use here directly to "test for today"
+                How we got here:
+                - main.js: day: moment() // << TODAY! :o)
+                - Passed as props through index.html to <movie-list> as today-for-list,
+                - hence from MovieList.vue to <movie-item> as today-for-item
+                */
+
+// YES works    if (!this.$moment().isSame(session.time, 'day')) {
+                if (!this.todayForList.isSame(session.time, 'day')) {
+// YAH. SAME:   if (!this.$root.moment().isSame(session.time, 'day')) {
                     console.log('NOT TODAY KID')
                     console.log('session.time: (just as String) ', session.time)
                     return false
+                    /*
+                     console.log('session.time: ', session.time)
+                     // 2017-09-08T15:15:00.000Z (String merely)
+                     console.log('this.$moment(session.time): ', this.$moment(session.time))
+                     // Moment object. okay. What you need.
+                     */
+
+
+                }
+                /*
+                 Okay, now we have Sessions only for today. Good.
+                 Next up, check if the "By Time" checkboxes are either 1) both empty or 2) both checked.
+                 Interestingly, either of those means, "Pass through ALL movies". Cheers:
+                 */
+                else if (this.timesmylist.length === 0 || this.timesmylist.length === 2) {
+                    return true
+                }
+                /*
+                Okay, now finally time to see, if one (and only one) time checkbox filter is checked, which it is: (before, or after, 6pm):
+                */
+                else if (this.timesmylist[0] === myFrozenTimes.BEFORE_6PM) {
+                    console.log('Made it this far: -01- BEFORE Test')
+                    // WR__ mode: Is *NOT* Working. (good grief - BAD assumption of how this would work)
+                    //  if (this.$moment(session.time).isBefore(this.$moment().hour(18))) {
+
+                    // Better: Instructor code:
+                    if (this.$moment(session.time).hour() < 18) {
+                            console.log('SAME AS TODAY BABY *AND* PASSES BEFORE 6pm :o) ')
+                            return true // session is before 6pm :o)
+                        }
                 }
 
-
-                 /* Bit o' ~pseudocode~spec~ sorta: 02
-                 2) then we filter on Before 6 v. After 6
-
+                /*  Here is the AFTER 6pm test.
+                    (Coulda been just an else {})
                 */
+                else if (this.timesmylist[0] === myFrozenTimes.AFTER_6PM)
+                {
+                    console.log('Made it this far: -02- AFTER test')
+                    // Instructor Code: (let's use it)
+                    if (this.$moment(session.time).hour() >= 18)
+                    // WR__ mode: Is *NOT* Working. (good grief - BAD assumption of how this would work)
+//                    console.log('WR__ mode this.$moment().hour(18) What Does That Yield/Return/Give? ', this.$moment().hour(18)) // << Seems to just give the moment() of NOW Moment object. Nothing to do with setting any "hour 18" as far as I can tell.
+//                    if (this.$moment(session.time).isSameOrAfter(this.$moment().hour(18)))
 
+                    {
+                        console.log('SAME AS TODAY BABY *AND* PASSES AFTER 6pm :o) ')
+                        return true
+                    }
+
+                } else { // Should Not Get Here
+                    console.log('SOMETHING WHACK ?')
+                    return false
+                }
             }
         },
         computed: {
@@ -306,6 +379,7 @@ But if Checked is History, should be included
 //                    console.log('wtf this.genresmylist or bust: ', this.genresmylist)
 //                    console.log('wtf this.moviesForMovieList or bust: ', this.moviesForMovieList)
                 return this.moviesForMovieList
+                // 1st spin:
                     .filter(this.moviePassesGenreFilter)
                     // 2nd spin:
                     // For each movie, iterate its sessions. find() returns truthy.
@@ -322,6 +396,17 @@ But if Checked is History, should be included
                          seats: 175
                          time: "2017-09-07T15:15:00.000Z"
                          */
+
+                        /* Another (fine) insight:
+                        Q. Okay, why do we use find() here?
+                        A. Because, our filter is SATISFIED as soon as it finds the FIRST that passes.
+                        We do not need really need to process ALL the array elements.
+                        (I had been struggling, seeing that the code was only processing the first session... But that's what we expect, turns out.)
+
+                        That is - Once we determine that this movie DOES have at least ONE session that passes our "TimeFilter", that movie IS to be included in the List of Movies sent on to the MovieItem.vue component.
+                        (And recall, that MovieItem component then does its own processing on those sessions (to show *all* the sessions *for today* - regardless of the TimeFilter ('Before 6pm' etc.) that a user may have applied.))
+                        */
+
                         return movie.sessions.find(this.sessionPassesTimeFilter)
                         }
                         ) // << our callback

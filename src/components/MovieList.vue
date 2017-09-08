@@ -93,9 +93,12 @@ Cheers.
 
     // Our "category" argument carries the hard-coded string value "genre", which matches the name of this data array:
     genre: [], // sent as props down to movie-list as genresmylist.
-*/
 
-    props: ['genresmylist', 'moviesForMovieList', 'todayForList' ],
+ LESSON 94. Time to add the time[] array to props passing here (e.g. ['Before 6 pm']   Following odd naming convention of mine, calling it timesmylist. Cheers.
+
+ */
+
+    props: ['genresmylist', 'timesmylist', 'moviesForMovieList', 'todayForList' ],
         data: function() {
             return {
                 /* Super-Duper-Seded by 'movies-for-movie-list'
@@ -126,12 +129,26 @@ which comes as props from Root instance where it is known as 'moviesFromAPI'. Ch
           moviePassesGenreFilter(movie) {
               if (this.genresmylist.length == 0) {
                   // No genres checked, no movies "match", so we just send back ALL the movies
+
+                  /*
+                  Huh. Little update.
+                  We may well need to take a look at the other dimension now: session times!
+                  If time [] array is ALSO empty, okay, send 'em all. But if it isn't .... TODO
+                  if (this.timesmylist.length === 0) {
+                    // No "By time" checked, so let 'em ALL through...
+                    return true //....
+                  }
+                  */
+
                   return true // this.moviesForMovieList
               } else {
-                  console.log('wtf is in this.genresmylist ', this.genresmylist)
+                  console.log('wtf -01- is in this.genresmylist ', this.genresmylist)
+                  console.log('wtf -02- is in this.timesmylist ', this.timesmylist)
                   /*
                    wtf is in this.genresmylist  (3) ["Horror", "Fantasy", "Documentary", __ob__: Observer]
-                  */
+                   wtf -01- is in this.genresmylist  ["Comedy", "Animation", __ob__: Observer]
+                   wtf -02- is in this.timesmylist  ["After 6pm", "Before 6pm", __ob__: Observer]
+                   */
                   console.log('NEW 77 genresmylist, movie.movie.Genre: ', this.genresmylist + ' - ' + movie.movie.Genre + ' - ' + movie.movie.Title)
 
                   var thisMoviesArrayOfGenres = movie.movie.Genre.split(', ')
@@ -153,11 +170,6 @@ which comes as props from Root instance where it is known as 'moviesFromAPI'. Ch
 
                           So - you throw 'Fantasy' against that Array, viz. "indexOf()" and YES, it is found. Cheers.
 ====================
-
-
-                          Yes Men...
-                           thisMoviesArrayOfGenres :   "Genre": "Documentary, Comedy",
-               eachCheckedGenre: Comedy
                           */
                           console.log('33A -1 NOT FOUND?! eachCheckedGenre, thisMoviesArrayOfGenres ', eachCheckedGenre, thisMoviesArrayOfGenres )
 
@@ -205,6 +217,80 @@ But if Checked is History, should be included
 //              return this.genresmylist.includes(movieGenreToTest)
           }
 */
+
+
+            sessionPassesTimeFilter(session) {
+                // Invoked by find(), on movie.sessions Array; passes one session at a time                console.log('!! session is ', session)
+                /*
+                 !! session is  {__ob__: Observer}
+                   id: "tt1172203_0"
+                   seats: 185
+                   time: "2017-09-06T13:00:00.000Z"
+                 */
+
+                // initial testing:
+                // short circuit other testing:
+               // return true
+
+                console.log('wtf -02-SESSIONSFILTER- is in this.timesmylist ', this.timesmylist)
+
+                /* Bit o' ~pseudocode~spec~ sorta: 01
+                0) movie.sessions contains lots of sessions, over many days
+                1) for this filter, we want first off, only movies from TODAY
+                  1.A.) Hmm, we have already done that once ... in the MovieItem.vue method/computed:
+- filteredMovieSessionsByDayMethod(movieSessions)                   - filteredMovieSessionsByDayComputed()
+              But here, I guess, we are already in the middle of a find() iteration over the array, so the logic to "filter" will just be an if() statement.
+              So we'll test using Moment's "day"  ??? ... ?
+              Because we know (!?) we cannot expect to use Moment's .isSame() test, inside of an if(), right? ?? ?? ?
+              Hmm.
+
+              What the hey?
+              This if() statement DID work, with moment.isSame(). Huh?
+              MOVIEITEM.VUE:
+                 if (this.$root.moment(eachMovieSession.time).isSame(this.todayForItem), 'day') {
+                 // This IF check is NOT WORKING
+                 // ALL items are passing. Not right.
+
+              MOVIELIST.VUE: (here)
+                 if (this.$moment().isSame(session.time, 'day')) {
+                 // YES - WORKS! (?) << Hmm, maybe not ... I re-started npm run start the server; that generated new session times (based on today etc); getting different results
+                 console.log('SAME AS TODAY BABY') ...
+
+*/
+
+                /* New Insight. Whoa.
+                This if() test is NOT to do the 'return' from.
+                This if() test is just to see: "Should this movie be filtered in? Selected? Sent for further processing to MovieItem.vue?"
+                That is, for starters, does this movie have ANY sessions that simply fall into TODAY?
+                If yes (even just one), then YES it IS filtered in, it IS Selected, it IT sent for further processing to MovieItem.
+
+                Next up will be further test: "Does this movie have ANY sessions that fall into the requested timeframe, whichever that is: of either "Before 6 pm" OR "After 6 pm"?
+                As before, if yes (even just one), then again YES it IS filtered in... sent to MovieItem.
+                Recall: MovieItem will do its own processing.
+                First off, MovieItem will ONLY show session times for TODAY. (Recall, right now, we are only offering the user an implied, hard-coded, "Today". We don't yet have, "see movies for tomorrow, next day, etc.)
+                Then, for that "Today" selection of movie session times, in fact, MovieItem will DISPLAY *ALL* the session times for today, EVEN IF the user clicked on "Before 6 pm". It will DISPLAY times, for today, for that movie even AFTER 6 pm.
+                The point is, the movie in question DOES have at least one session "Before" 6 pm and THAT is why it is being filtered in, being selected, being displayed as a movie item.
+                But once that movie item is being displayed, it is going to display all its information about sessions.
+                (It is NOT going to show you only the sessions for the timeframe you indicated. Not going to show you only the "Before 6 pm" sessions, for example. Bon.)
+                */
+                if (this.$moment().isSame(session.time, 'day')) {
+// YAH. SAME:   if (this.$root.moment().isSame(session.time, 'day')) {
+                    console.log('SAME AS TODAY BABY')
+                    console.log('session.time: (just as String) ', session.time)
+                    return true
+                } else {
+                    console.log('NOT TODAY KID')
+                    console.log('session.time: (just as String) ', session.time)
+                    return false
+                }
+
+
+                 /* Bit o' ~pseudocode~spec~ sorta: 02
+                 2) then we filter on Before 6 v. After 6
+
+                */
+
+            }
         },
         computed: {
             filteredMovies() {
@@ -219,7 +305,26 @@ But if Checked is History, should be included
 */
 //                    console.log('wtf this.genresmylist or bust: ', this.genresmylist)
 //                    console.log('wtf this.moviesForMovieList or bust: ', this.moviesForMovieList)
-                return this.moviesForMovieList.filter(this.moviePassesGenreFilter)
+                return this.moviesForMovieList
+                    .filter(this.moviePassesGenreFilter)
+                    // 2nd spin:
+                    // For each movie, iterate its sessions. find() returns truthy.
+                    .filter((movie) => {
+                            console.log('Hey 2nd filter, and movie.movie.Title is: ', movie.movie.Title)
+                        // Hey 2nd filter, and movie.movie.Title is:  The Corporation
+                           // console.log('Hey 2nd filter, and movie.sessions is: ', movie.sessions)
+                        /*
+                         MovieList.vue?b766:285
+                         Hey 2nd filter, and movie.sessions is:
+                         (25) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, __ob__: Observer]
+                         0:
+                         id: "tt0379225_0"
+                         seats: 175
+                         time: "2017-09-07T15:15:00.000Z"
+                         */
+                        return movie.sessions.find(this.sessionPassesTimeFilter)
+                        }
+                        ) // << our callback
 
 
  /* ====  REFACTORING  ==================================== */

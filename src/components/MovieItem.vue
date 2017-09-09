@@ -21,11 +21,14 @@
                 -->
 
                 <div class="movie-sessions">
-                    <!-- Also works
+                    <!-- Also works -01- ByDay
                    <div v-for="movieSession in filteredMovieSessionsByDayComputed" class="session-time-wrapper">
                     -->
-<!--  ALSO WORKS: -->
+<!--  ALSO WORKS: -01- INITIAL: ByDay
                     <div v-for="movieSession in filteredMovieSessionsByDayMethod(movieSessions)" class="session-time-wrapper">
+-->
+<!-- -02- NEW: ByDayByTime                    -->
+                        <div v-for="movieSession in filteredMovieSessionsByDayByTimeMethod(movieSessions)" class="session-time-wrapper">
                         <div class="session-time">
                             {{ gimmeMovieSessionTime(movieSession) }}</div>
                     </div>
@@ -41,6 +44,8 @@
 </template>
 
 <script>
+    import myFrozenTimes from '../util/times' // AFTER_6PM etc. ...
+
     export default {
 /*
      Vue Magic:
@@ -49,7 +54,12 @@
     Cheers.
         https://vuejs.org/v2/guide/components.html#camelCase-vs-kebab-case
 */
-        props: ['movieItemThingFooBar', 'movieSessions', 'todayForItem'], // all we got on that movie ...
+        props: ['movieItemThingFooBar', 'movieSessions', 'timesmylistForItem', 'todayForItem'],
+        // movieItemThingFooBar = all we got on that movie ...
+        // movieSessions = actually on the movie object, but separated out for ease of processing
+        // timesmylistForItem = user-checked boxes re: "After 6pm" etc.
+        // todayForItem = passed down object that was created somewhere above (main.js!), capturing moment() to get "today" Not really needed; cheers.
+
         methods: {
             gimmeMovieSessionTime(movieSession) {
               //  console.log('do we get here gimme ', movieSession.time) // yep
@@ -64,12 +74,77 @@
     // NOT USING THIS "filtered...METHOD"
 // USING INSTEAD (equivalent) "filtered...COMPUTED" below
 
+// ===================================================================
+/* *** -01- *** INITIAL METHOD: filteredMovieSessionsByDayMethod   *******************
+N.B. This initial method was used when parent MovieList did NOT consider the "by Session time" factor. It did not limit movie selection by the Sessions, at all, really, and certainly not by the Sessions to being "today".
+MovieList simply filtered for the Genre (e.g. all "Comedy"), leaving it to the child MovieItem to then filter the Sessions (e.g. on each Comdedy) to those for "today".
+
             filteredMovieSessionsByDayMethod(movieSessions)  {
                     return this.movieSessions
                         .filter((eachMovieSession) => {
                         return this.$moment(eachMovieSession.time).isSame(this.todayForItem, 'day')
-                            
                 })
+            }
+*/
+
+// ===================================================================
+/* *** -02- *** NEW METHOD: filteredMovieSessionsByDayByTimeMethod    *******************
+N.B. Now, parent MovieList takes care of both: 1) filter by Genre (those "Comedy" movies), AND 2) filter for the Time (e.g. "Before 6pm").
+
+Important Note:
+- The parent MovieList "filtering" is for just determining *inclusion* in the list of movies.
+- It is not filtering for precisely which sessions to actually *display/render* to screen. That latter is done by child MovieItem.
+Parent MovieList sends a Whole Movie record, with ALL sessions on it.
+- All sessions for all days, today and other days.
+- All sessions for all times, for Before and for After 6pm.
+It will be MovieItem that determines with its own filter which sessions will go on the screen. (e.g., those for today, and those for "Before 6pm").
+Thank you.
+
+Back on parent MovieList: ***Implicit*** in that phrase of "Before 6pm" filtering is: "for today". Return me movies, please, that have showings "Before 6pm" means,  "showings before 6pm *today*". (Not: "Yeah, return me movies that happen to have showings Before 6pm next Thursday" or whatever. No.)
+Final note: Soon-upcoming further development: When I say "today", what I really mean is, "the day of interest" - the day/date I have clicked on. We will shortly build the date navigation bar:
+  | Today | Tomorrow | Next Day | Day After That ... |
+- User clicks on one of those day/dates.
+- THAT date is the "date of interest"
+That date is the one we do all this filtering for.
+Right now, it is all simple and more or less hard-coded to be just about "today".
+Cheers.
+
+So, by the time the list of filtered movies gets to invoking this MovieItem child component (one for each movie that passes the (two) filters in the parent ( -1-: genre, -2-: time )), we already know
+
+What's interesting about this "-02- NEW Method" is that, it too DOES need to run the test/filter that the Session does match "today". (Like the -01- INITIAL Method).
+So, in a sense, we really could have just EXTENDED method -01- to more or less become this method -02-...
+But, we instead swap out the -01- way, and plop/copy in here (non-DRY code "reuse") the little method for filtering sessions that we in fact use over on parent MovieList to filter movies in the first place. See below.
+*/
+            filteredMovieSessionsByDayByTimeMethod(movieSessions)  {
+                return movieSessions
+                    .filter(this.sessionPassesTimeFilter)
+            },
+            sessionPassesTimeFilter(eachMovieSession) {
+
+                /* First off, implicit in filtering "by time," is you want it just for *"today"*
+                   (Where "today" will come to mean, "day/date of interest"
+                   Bon. */
+                if (!this.$moment(eachMovieSession.time).isSame(this.todayForItem, 'day')) {
+                    // Not "today"? Fuhgeddaboudid
+                    return false
+                } else if (this.timesmylistForItem.length === 2 || this.timesmylistForItem.length === 0) {
+                    // Next up: with just 2 choices, clicking BOTH, or NEITHER, these both yield: "true" / pass / include
+                    // Choice 1: "Before 6pm"; Choice 2: "After 6pm"
+                    // - NEITHER checked = No preference, bring 'em ALL on, all are good.
+                    // - BOTH checked = (bit odd but what the hey) We Boolean "OR" them together to create the set of ALL possibilities are good.
+                    return true
+                } else if ( this.timesmylistForItem[0] === myFrozenTimes.BEFORE_6PM) {
+                    /* Finally, the real testing conditions.
+                    Our user has clicked one (and only one) of our 2 choices.
+                    Is it "Before 6pm"? ...
+                    See the array at its [0] position!
+                    */
+                    return this.$moment(eachMovieSession.time).hour() < 18
+                } else if (this.timesmylistForItem[0] === myFrozenTimes.AFTER_6PM) {
+                    return this.$moment(eachMovieSession.time).hour() >= 18
+                } else {
+                    console.log('You Really Should Never Get Here (MovieItem.vue sessionPassesTimeFilter(eachMovieSession)): ', eachMovieSession)
+                }
             }
         },
         computed: {

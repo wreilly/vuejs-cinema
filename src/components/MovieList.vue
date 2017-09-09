@@ -44,6 +44,7 @@ Cheers.
                             v-for="movie in filteredMovies"
                             v-bind:movie-item-thing-foo-bar="movie.movie"
                     v-bind:movie-sessions="movie.sessions"
+                            v-bind:timesmylist-for-item="timesmylist"
                     v-bind:today-for-item="todayForList"></movie-item>
                 </div>
             </div>
@@ -127,7 +128,9 @@ which comes as props from Root instance where it is known as 'moviesFromAPI'. Ch
             */
         },
         methods: {
+          /* **************************************** */
           moviePassesGenreFilter(movie) {
+          /* **************************************** */
               if (this.genresmylist.length == 0) {
                   // No genres checked, no movies "match", so we just send back ALL the movies
 
@@ -220,9 +223,9 @@ But if Checked is History, should be included
 */
 
 
-/* **************************************** */
+            /* **************************************** */
             sessionPassesTimeFilter(session) {
-/* **************************************** */
+            /* **************************************** */
                 // Invoked by find(), on movie.sessions Array; passes one session at a time
                 // console.log('!! session is ', session)
                 /*
@@ -366,7 +369,9 @@ But if Checked is History, should be included
             }
         },
         computed: {
+            /* **************************************** */
             filteredMovies() {
+            /* **************************************** */
                 // -----------
                 // SEE "INSTRUCTOR CODE" at BOTTOM. Gracias.
                 // -----------

@@ -33,9 +33,13 @@ Cheers.
             <div v-else>
                 <div v-if="filteredMovies.length === 0" class="no-results">
                     <p>Too stringent, my friend! Let up, let the movies IN to your life!</p>
-                    <p>You're insisting on:</p>
+                    <p>Computed property 'noResults' about what you're insisting on: {{ noResults }}</p>
+                    <p>You're insisting on: {{ timesmylist }} {{ genresmylist }}</p>
                     <ul>
                         <li v-for="genremylist in genresmylist">{{ genremylist }}</li>
+                    </ul>
+                    <ul>
+                        <li v-for="timemylist in timesmylist">{{ timemylist }}</li>
                     </ul>
                 </div>
                 <div v-else>
@@ -452,7 +456,7 @@ But if Checked is History, should be included
 */
    /* =====  /REFACTORING =================================== */
 
-            } // /filteredMovies()
+            }, // /filteredMovies()
                 /*
                 INSTRUCTOR CODE
                 for computed() filteredMovies()
@@ -488,6 +492,40 @@ But if Checked is History, should be included
                  ------------
                 ------------
                  */
+                noResults() {
+                    /*
+                    Inputs: timesmylist, genresmylist
+                    e.g.  [ "After 6pm" ] [ "Animation", "Crime", "Drama" ]
+
+                    Desired Output:
+                     After 6pm, Animation, Crime, Drama
+                    */
+
+                    // WR__ CODE-MODE: ;o)
+
+                    var myTextListTimesGenres = ''
+                    this.timesmylist.forEach((timeText) => myTextListTimesGenres += timeText + ', ')
+                    this.genresmylist.forEach((genreText) => myTextListTimesGenres += genreText + ', ')
+//                    myTextListTimesGenres = myTextListTimesGenres.slice(-2) // << Nope
+                    // https://www.google.com/search?q=javascript+string+cut+off+last+character
+                    myTextListTimesGenres = myTextListTimesGenres.substring(0, myTextListTimesGenres.length-2)
+                 // YEP!
+                      return myTextListTimesGenres
+
+
+
+                    // INSTRUCTOR CODE:
+                    // ARRAY "joins the elements of an array into a string, and returns the string"
+                    let instructorTimesString = this.timesmylist.join(', ')
+                    let instructorGenresString = this.genresmylist.join(', ')
+
+                    // Ye Olde ternary expression
+                    // To put or not to put that comma after any (if any) "times" listing. Cheers.
+                // YEP!    return `No results (sez Instructor) for ${instructorTimesString}${instructorTimesString.length === 0 ? '' : ', '}${instructorGenresString}`
+
+
+
+                }
         }, // /computed()
         created() {
             // console.log('Moment object, from Root Component, seen here in Child Component MovieList.vue (without importing Moment.js) ', this.$moment)

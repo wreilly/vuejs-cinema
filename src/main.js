@@ -29,7 +29,20 @@ moment.tz.setDefault("UTC")
 // Server (/api.js) ALSO uses same timezone default: "UTC"
 Object.defineProperty(Vue.prototype, '$moment', { get() { return this.$root.moment } })
 
+
+
+
 // LESSON 98 - EVENT BUS
+
+import { myUtilRootCheckFilterBusMethod } from './util/mybus'
+
+console.log('wtf myUtilRootCheckFilterBusMethod ', myUtilRootCheckFilterBusMethod) // WAS undefined (I hadn't "destructured" my import here. oof.)
+// Now O.K.:
+// wtf myUtilRootCheckFilterBusMethod  ƒ myUtilRootCheckFilterBusMethod(category, title, checked) {
+// console.log('-03- NEW myUtilRootCheckFilterBusMethod!', category, ' | ', title, ' | ', checked);
+
+
+
 var myBus = new Vue() // just an empty Vue instance, enough to serve as our "bus"
 
 Object.defineProperty(Vue.prototype, '$myBus', {
@@ -67,6 +80,9 @@ new Vue({
     },
     methods: {
         // Yes! :o) (Not that "myBusCheckFilter..." Okay.
+
+        // NO LONGER USED (LESSON 98):
+        // Now we have Refactored this out to /util/mybus.js (LESSON 98)
         myRootCheckFilterBusMethod(category, title, checked) {
             console.log('-02- NEW myRootCheckFilterBusMethod!', category, ' | ', title, ' | ', checked )
             // Great. This is getting the data here, directly via the Event Bus (no longer the up-and-down of $emit chain).
@@ -98,6 +114,7 @@ new Vue({
         - title is name of a category value: 'Comedy' or 'Crime', or 'After 6 pm'
         - checked is Boolean: true or false
          */
+        // NO LONGER USED (LESSON 98)
         checkFilterGrandParentMethod(category, title, checked){
             console.log('checkFilterGrandParentMethod!', category, ' | ', title, ' | ', checked ) // Yep.
             // checkFilterGrandParentMethod! genre  |  Animation  |  true
@@ -166,10 +183,18 @@ new Vue({
         // Interesting: Seems to have worked WITHOUT 'this.' in front of 'myBus'. Hmm.
         // WORKS:
         // myBus.$on('check-filter-child-event-bus', this.myRootCheckFilterBusMethod)
-        this.$myBus.$on('check-filter-child-event-bus', this.myRootCheckFilterBusMethod)
+// WORKS:        this.$myBus.$on('check-filter-child-event-bus', this.myRootCheckFilterBusMethod)
+
+        // OK, now with refactoring out to /util/mybus.js, our method here no longer uses (cannot use) 'this.' in front:
+        this.$myBus.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
         // Just takes and passes that payload, baby.
         // (Methinks.)
         // Yes, that's right. We pass 3 params and all 3 get there. Good.
+
+        /*
+        Hmm.
+         [Vue warn]: Error in event handler for "check-filter-child-event-bus": "TypeError: Cannot read property 'apply' of undefined"
+         */
 
     }
 })

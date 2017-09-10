@@ -56,7 +56,13 @@ active: checked  } "
                  - checked is Boolean: true or false
                  */
 
+/* INITIAL -01-  EMIT CHAIN:
                 this.$emit('check-filter-child-event', this.category, this.title, this.checked, this.theValueInEachGenre) // N.B. Last param here is "dropped on the floor" = not used by the called method. Okay, no biggie.
+*/
+
+/* NEW -02- LESSON 98 EVENT BUS:  */
+                this.$myBus.$emit('check-filter-child-event-bus', this.category, this.title, this.checked, this.theValueInEachGenre)
+
             }
         }
     }

@@ -21,12 +21,32 @@ LESSON 90 ~05:59
 - this.$root is (I guess) Vue.js reserved word (or similar) to speak of the Root Component. Okay.
 - JavaScript's Object.defineProperty() and that get(){} are how you create this thing.
 - You create it on the Vue object's prototype.
+- Once in place, any component can access it ...
 Cheers.
  */
 import moment from 'moment-timezone'
 moment.tz.setDefault("UTC")
 // Server (/api.js) ALSO uses same timezone default: "UTC"
 Object.defineProperty(Vue.prototype, '$moment', { get() { return this.$root.moment } })
+
+// LESSON 98 - EVENT BUS
+var myBus = new Vue() // just an empty Vue instance, enough to serve as our "bus"
+
+Object.defineProperty(Vue.prototype, '$myBus', {
+    get() {
+        return this.$root.myBus
+    }
+})
+
+// Nah!
+/*
+myBus.methods = {
+    // Seems to be: NOPE << Correct-a-mundo. T'ain't this. Cheers.
+    myBusCheckFilterBusMethod(category, title, checked) {
+        console.log('-02- NEW myBusCheckFilterBusMethod!', category, ' | ', title, ' | ', checked )
+    }
+}
+*/
 
 new Vue({
     el: '#app',
@@ -38,13 +58,40 @@ new Vue({
         time: [], // e.g. ['Before 6pm'] // ['notempty-time'],
         moviesFromAPI: [],
         moment, // << 3rd party object, turned into a data property we can sling around in our app. Who knew.
-        day: moment() //.format("YYYY MM DD") // current day, "today"!
+        day: moment(), //.format("YYYY MM DD") // current day, "today"!
+        myBus: myBus // like moment above, another custom "defined property" added to the Vue prototype instance here.
     },
     components: {
         'movie-list': MovieList,
         'movie-filter': MovieFilter,
     },
     methods: {
+        // Yes! :o) (Not that "myBusCheckFilter..." Okay.
+        myRootCheckFilterBusMethod(category, title, checked) {
+            console.log('-02- NEW myRootCheckFilterBusMethod!', category, ' | ', title, ' | ', checked )
+            // Great. This is getting the data here, directly via the Event Bus (no longer the up-and-down of $emit chain).
+            // Time to just non-DRY copy & paste same logic that is found in the "grandFather" method below, to apply/use here. Cheers.
+            /* Pseudo-code-ish-spec:
+            We have two arrays in data{}: genre[], time[].
+            - Passed-in 'category' is a String to indicate which.
+            - Passed-in 'title' is a String value to add to the appropriate array.
+            - Passed-in 'checked' is a Boolean which tells us, actually, whether it should be added or in fact removed ("unchecked").
+            Bon.
+            So, we determine whether checked is T/F, etc.
+            e.g.
+            category | title | checked
+            genre | Comedy | true
+             */
+            if (!checked) {
+                // SUBTRACT!
+                // We do assume the title is there in the array, but, we have to find out just *where* it is in the array, to remove it!
+                var foundPosition = this[category].findIndex((eachTitle) => eachTitle === title)
+                this[category].splice(foundPosition, 1)
+            } else {
+                this[category].push(title)
+            }
+        },
+
         /* YES. This method belongs here on the Root instance. Bon. */
         /*
         - category is type of category: 'genre' or 'time'
@@ -115,5 +162,14 @@ new Vue({
                  __proto__: Object
                  */
             })
+
+        // Interesting: Seems to have worked WITHOUT 'this.' in front of 'myBus'. Hmm.
+        // WORKS:
+        // myBus.$on('check-filter-child-event-bus', this.myRootCheckFilterBusMethod)
+        this.$myBus.$on('check-filter-child-event-bus', this.myRootCheckFilterBusMethod)
+        // Just takes and passes that payload, baby.
+        // (Methinks.)
+        // Yes, that's right. We pass 3 params and all 3 get there. Good.
+
     }
 })

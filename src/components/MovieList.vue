@@ -1,9 +1,14 @@
 <template>
     <div id="movie-list">
         <div>
+            <div v-if="false" class="no-results">
+                <p>Loading yer films...!</p>
+            </div>
+
             <div v-if="moviesForMovieList.length === 0" class="no-results">
                 <p>Loading yer films...!</p>
             </div>
+
             <div v-else>
                 <div v-if="filteredMovies.length === 0" class="no-results">
                     <p>Too stringent, my friend! Let up, let the movies IN to your life!</p>

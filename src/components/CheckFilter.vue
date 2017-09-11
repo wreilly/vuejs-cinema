@@ -29,6 +29,7 @@ active: checked  } "
 */
 
 /* NEW -02- LESSON 98 EVENT BUS:  */
+          //      console.log('method... this ', this) // Vue component $myBus undefined
                 this.$myBus.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
             }
         }

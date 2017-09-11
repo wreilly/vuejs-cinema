@@ -1,5 +1,5 @@
 /*
-Here is how the function below is being called, from main.js, using BIND():
+Here is how the function below is being called, from main.js (or now from Overview.vue), using BIND():
  this.$myBus.$on(
   'check-filter-child-event-bus',
   myUtilRootCheckFilterBusMethod.bind(this)

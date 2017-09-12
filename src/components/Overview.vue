@@ -1,21 +1,15 @@
 <template>
-    <div>
-        <div id="title">
-            <img src="/public/logo.png">
-            <h1>WR__ Overview Component: Vue.js Cinema</h1>
-        </div>
-        <div id="overview">
-            <div id="main">
-                <movie-list
-                        v-bind:genresmylist="genre"
-                        v-bind:timesmylist="time"
-                        v-bind:movies-for-movie-list="moviesFromAPI"
-                        v-bind:today-for-list="day"></movie-list>
-<!-- No Longer Used: Now with EVENT BUS we can skip listening on "middle-man" component MovieFilter:
+    <div id="overview">
+        <div id="main">
+            <movie-list
+                    v-bind:genresmylist="genre"
+                    v-bind:timesmylist="time"
+                    v-bind:movies-for-movie-list="moviesFromAPI"
+                    v-bind:today-for-list="day"></movie-list>
+            <!-- No Longer Used: Now with EVENT BUS we can skip listening on "middle-man" component MovieFilter:
                 <movie-filter v-on:check-filter-parent-event="checkFilterGrandParentMethod"></movie-filter>
 -->
-                <movie-filter></movie-filter>
-            </div>
+            <movie-filter></movie-filter>
         </div>
     </div>
 </template>
@@ -44,7 +38,8 @@ import MovieList from './MovieList.vue'
 import MovieFilter from './MovieFilter.vue'
 
     export default {
-    props: ['day', 'myBus'], // << YES! myBus as prop
+//        props: ['day', 'myBus'], // << YES! myBus as prop
+        props: ['day', 'myBusPropertyReference'], // ?
         data: function() {
             return {
                 genre: [], // sent as props down to movie-list as genresmylist.
@@ -103,7 +98,25 @@ import MovieFilter from './MovieFilter.vue'
 
 
             // ? Move from Overview.vue ( ? ) << YES!
-            this.myBus.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+
+            /* *********
+            ROUTER-VIEW VIZ. CERTAIN PROPERTIES ...
+            Quite interesting. (LESSON 101)
+            When NOT in the vue-router, <router-view>, this next line DID WORK, with simply myBus:
+            this.myBus.$on...
+            Then, when IN the vue-router and <router-view>, myBus was undefined; needed to use:
+            this.$myBus.$on...
+
+            (See also MovieList.vue re: todayForList)
+             */
+
+            console.log('Overview... this.myBus ', this.myBus) // undefined. hmmph encore une fois.
+
+// INITIALLY:
+//            this.myBusPropertyReference.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+            this.$myBusPropertyReference.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+
+
 //            console.log('Overview... this ', this) // Vue component myBus: Vue$3
         }
     }

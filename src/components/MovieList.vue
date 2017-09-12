@@ -83,7 +83,20 @@
             sessionPassesTimeFilter(session) {
             /* ******************************* */
 
-// YES works    if (!this.$moment().isSame(session.time, 'day')) {
+                /* *********
+                 ROUTER-VIEW VIZ. CERTAIN PROPERTIES ...
+                 Quite interesting. (LESSON 101)
+                 When NOT in the vue-router, <router-view>, the below line DID WORK, with simply myBus:
+                 !this.todayForList.iSame()...
+                 Then, when IN the vue-router and <router-view>, todayForList was undefined; needed to use:
+                 !this.$moment().isSame()...
+
+                 (See also Overview.vue re: myBus)
+                 */
+
+// YES works
+// if (!this.$moment().isSame(session.time, 'day')) {
+                // Yes: (also)
                 if (!this.todayForList.isSame(session.time, 'day')) {
                     console.log('NOT TODAY KID')
                     return false

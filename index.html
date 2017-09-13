@@ -41,14 +41,23 @@
     v-bind:day="day"
     v-bind:my-bus="myBus"></router-view>
 -->
-<!-- WORKS: :o) -->
+<!-- WORKS: :o)
     <router-view
             v-bind:my-bus-vue="myBusVue"></router-view>
+-->
 
     <!-- ATTEMPT! # 2 FAILED
     <router-view
             v-bind:my-bus-vue-data-prop="myBusVueDataProp"></router-view>
  -->
+
+    <!-- ATTEMPT # 3 -->
+    <!--<router-view v-bind:my-bus-vue-data-prop-new="myBusVueDataPropNew"></router-view>-->
+    <!-- ATTEMPT # 3AA -->
+    <router-view v-bind:my-bus-vue-data-prop-new="myBusVueDataName"></router-view>
+    <!-- ATTEMPT # 3A -->
+    <!--<router-view v-bind:my-bus-vue-data-prop-new-pass="myBusVueDataPropNew"></router-view>-->
+
 </div>
 <script src="/dist/build.js"></script>
 </body>

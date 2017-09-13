@@ -30,7 +30,19 @@ Object.defineProperty(Vue.prototype, '$myBusVueProperty', { // ATTEMPT # 1 I thi
 // Object.defineProperty(Vue.prototype, '$myBusVue', { // << YES.
     get() {
         // return this.$root.myBus;
+/* YES WORKS
         return this.$root.myBusVue
+*/
+// ATTEMPT # 3 (!?)
+        // ? seems not intuitive... And yet, that is IT! whoa.
+        // This 'myBusVueDataPropNew is on the LEFT-SIDE of the data: {} below
+        // The RIGHT-SIDE is 'myBusVue' - the actual Event Bus Vue instance. There you go.
+        // But here, we need to invoke the LEFT-SIDE
+        // (which, in turn, gets us what is on the RIGHT-SIDE. very good.)
+        // ATTEMPT # 3:
+        // return this.$root.myBusVueDataPropNew
+        // ATTEMTP # 3AA
+        return this.$root.myBusVueDataName // Yes! :o)
     }
 })
 /*
@@ -86,15 +98,28 @@ new Vue({
           Hmm. Question. Since we put this on the prototype, it's already directly accessible via that '$' reference... Maybe don't need to put it into data: {} here? Maybe don't need to pass it down as props: [] ? Hmm.
          // myBusPropertyReference: myBusVue // another custom "defined property"
          */
+
 /* WORKS! */
         // another custom "defined property"
-        myBusVue: myBusVue // << could this differ, on LEFT-SIDE? Hmm.
+// >> YES:        //
+        // myBusVue: myBusVue // << could this differ, on LEFT-SIDE? Hmm.
         // Q. AND, where exactly do I *use* that LEFT-SIDE 'myBusVue' in code? Hmm.
         // A. 1) Index.html router-view v-bind, on the RIGHT-SIDE!
         // A. 2) Overview.vue props:['myBusVue']
+        // A. 3) HAH! (entirely unexpected) It ALSO gets used in the GETTER() for the Object.defineProperty for $myBusVueProperty. Who knew? whoa.
 
 // ATTEMPT! # 2 FAILED:
 //         myBusVueDataProp: myBusVue // another custom "defined property"
+// ATTEMPT! # 3: SUCCESS
+        // RIGHT-SIDE is the actual Event Bus Vue instance
+        // LEFT-SIDE is the property name, known to this Vue app
+        // We use the LEFT-SIDE in these 3 places:
+           // A. 1) Index.html router-view v-bind, on the RIGHT-SIDE!
+           // A. 2) Overview.vue props:['myBusVueDataPropNew']
+           // A. 3) HAH! (entirely unexpected) It ALSO gets used in the GETTER() here in MAIN.JS for the Object.defineProperty for $myBusVueProperty. Who knew? whoa.
+
+        // myBusVueDataPropNew: myBusVue // Another shot at this... # 3
+        myBusVueDataName: myBusVue // Another shot at this... # 3AA Works! :o)
 
     },
     components: {

@@ -48,8 +48,20 @@ active: checked  } "
                 console.log('this.$root', this.$root) // Vue$3 {_uid:1}
                 console.log('this.$root.myBusVue', this.$root.myBusVue) // Vue$3 {_uid:0}
                 console.log('this.$root.$myBusVue', this.$root.$myBusVue) // undefined
+//                this.$root.myBusVue.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
 
-                this.$root.myBusVue.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+
+                // **  ***
+                // ATTEMPT # 3 PROTOTYPE DEFINED PROPERTY: $myBusVueDataPropNew
+                // No! >> // Invoke the defined property on the Vue __proto__ (no '.$root')
+                /* For this CheckFilter component, even though we are doing "ATTEMPT # 3" with "DataProp" etc., it is NOT USED here. It does NOT change how this component just uses the defined Property (not any "passed-in prop"). Only Overview.vue is using that passed-in prob biz.)
+                */
+                console.log('AAGGHH - this.$myBusVueDataPropNew ', this.$myBusVueDataPropNew) // undefined (which is correct - there is no defined property '$myBusVueDataPropNew') OK
+                console.log('AAGGHH-02 - this.myBusVueDataPropNew ', this.myBusVueDataPropNew) // undefined (which is also correct - there is no passed-in prop 'myBusVueDataPropNew') OK
+//                this.$myBusVueDataPropNew.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+                // YES!!! :o)
+                this.$myBusVueProperty.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+
 
 
 

@@ -48,8 +48,6 @@ import MovieFilter from './MovieFilter.vue'
 /* WORKS!
         props: ['day', 'myBusVue'],
 */
-// ATTEMPT! # 2
-//        props: ['day', 'myBusVueDataProp'], // << NO. FAILED.
         /* Interesting. 'myBusVue' NOT NEEDED (!)
         Discovering (finally) that this passing in of the Object.definedProperty() 'myBusVue' here, as a v-bound prop from index.html/Root-component, down here to child Overview.vue component, is NOT NEEDED!
         I sort of knew that.
@@ -58,7 +56,16 @@ import MovieFilter from './MovieFilter.vue'
         Of course, the passed-in prop can benignly sit here, no biggie.
         You can console.log() it to your heart's (and keyboarding fingers') content.
         */
-        props: ['day', 'myBusVue'], // << Yes, works.
+// YES >>        props: ['day', 'myBusVue'], // << Yes, works.
+
+// ATTEMPT! # 2
+//        props: ['day', 'myBusVueDataProp'], // << NO. FAILED.
+
+        /* ATTEMPT # 3
+        Wish us luck
+        */
+        props: ['day', 'myBusVueDataPropNew'],
+
 //        props: ['day', 'myBusPropertyReference'], // ? nope. sigh.
         data: function() {
             return {
@@ -147,6 +154,7 @@ import MovieFilter from './MovieFilter.vue'
             console.log('-EOV- this.$root.myBusVueProperty', this.$root.myBusVueProperty) // undefined
             console.log('-FOV- this.$root.$myBusVueProperty', this.$root.$myBusVueProperty) // Vue$3 {_uid:0}   :o)
             console.log('-GOV- this.$myBusVueProperty', this.$myBusVueProperty) // Vue$3 {_uid:0}   :o)
+            console.log('-HOV- this.myBusVueDataPropNew ATTEMPT # 3, 3AA too :o) ', this.myBusVueDataPropNew) // Vue$3 {_uid:0}   :o) :o)
             // ========
 
 
@@ -158,10 +166,12 @@ import MovieFilter from './MovieFilter.vue'
 
             /* ***** YES! :o) ATTEMPT TO CHANGE # 1 $myBusVueProperty *********** */
 // INITIALLY:
-//  Yes:        PROP PASSED IN: myBusVue
+//  Yes:        PROP PASSED IN: myBusVue << Well, not now with Attempt # 3..
 // this.myBusVue.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+//  ATTEMPT # 3  YES :o)      PROP PASSED IN: myBusVueDataPropNew
+ this.myBusVueDataPropNew.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
             // Yes: PROTOTYPE DEFINED PROPERTY: $myBusVueProperty
-            this.$myBusVueProperty.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+// YES >>            this.$myBusVueProperty.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
             /* **************** */
 
 /*

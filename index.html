@@ -22,19 +22,33 @@
     <!--  Only root instance data that needs to be sent down to Overview component. I think...
     Hmm, here's another (the movies!) << NO!
     Hmm again - mebbe not?! -->
-<!--
-    <overview
-            v-bind:day="day"
-    v-bind:movies-from-api="moviesFromAPI"></overview>
--->
 
-    <router-view></router-view>
 <!-- Now handled by router-view:
     <overview
             v-bind:day="day"
     v-bind:my-bus="myBus"></overview>
 -->
+    <!--  N.B. (!) Here in router-view, still need to v-bind properties to attributes to pass down.
+     Only little downside:
+     1) These props will go to Any and All components put in here by router-view.
+     (right now we only have one Component: Overview.vue)
+     2) "What if user comes direct to that URL?" (they wouldn't get your props)
+     Again, for us, with this super-simple case, doesn't affect things. hmm.
+     Hmm.  https://stackoverflow.com/questions/37937262/passing-props-to-vue-js-components-instantiated-by-vue-router
+     -->
+<!-- No. day is a prop handled differently. In routes.js configuration. Hmm.
+    <router-view
+    v-bind:day="day"
+    v-bind:my-bus="myBus"></router-view>
+-->
+<!-- WORKS: :o) -->
+    <router-view
+            v-bind:my-bus-vue="myBusVue"></router-view>
 
+    <!-- ATTEMPT! # 2 FAILED
+    <router-view
+            v-bind:my-bus-vue-data-prop="myBusVueDataProp"></router-view>
+ -->
 </div>
 <script src="/dist/build.js"></script>
 </body>

@@ -30,7 +30,32 @@ active: checked  } "
 
 /* NEW -02- LESSON 98 EVENT BUS:  */
           //      console.log('method... this ', this) // Vue component $myBus undefined
+/*
+                this.$myBus.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+*/
+
+
+                // ATTEMPT! FAILED: PROTOTYPE DEFINED PROPERTY: $myBusVueProperty
+//                console.log('this', this) // Vue$3 {_uid:13}
+//                console.log('this.$root', this.$root) // Vue$3 {_uid:1}
+//                console.log('this.$root.$myBusVueProperty', this.$root.$myBusVueProperty) // undefined
+               // this.$root.$myBusVueProperty.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+
+
+                // ** *WORKS!  $myBusVue ***
+                // Yes: PROTOTYPE DEFINED PROPERTY: $myBusVue
+                console.log('this', this) // Vue$3 {_uid:13}
+                console.log('this.$root', this.$root) // Vue$3 {_uid:1}
+                console.log('this.$root.myBusVue', this.$root.myBusVue) // Vue$3 {_uid:0}
+                console.log('this.$root.$myBusVue', this.$root.$myBusVue) // undefined
+
+                this.$root.myBusVue.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+
+
+
+                /*
                 this.$myBusPropertyReference.$emit('check-filter-child-event-bus', this.category, this.title, this.checked)
+*/
             }
         }
     }

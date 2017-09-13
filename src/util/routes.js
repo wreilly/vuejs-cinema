@@ -4,16 +4,16 @@ import Overview from '../components/Overview.vue'
 
 // https://github.com/vuejs/vue-router/blob/dev/examples/route-props/app.js << Example
 
-console.log ('routes this? ', this) // undefined
+// console.log ('routes this? ', this) // undefined
 
 // Was not working to access it from main.js
 // E.g. this this.$root this.$moment this.$root.$moment   sigh
 import moment from 'moment-timezone'
 
-import myBusVue from '../main' // no
+// NOt trying to do this anymore ..
+// import myBusVue from '../main' // no
 // import { myBusVue } from '../main' // no
-
-console.log('myBusVue from main? ', myBusVue) // undefined. hmmph.
+// console.log('myBusVue from main? ', myBusVue) // undefined. hmmph.
 
 export default [
 /*
@@ -35,7 +35,8 @@ export default [
         path: '/',
         component: Overview,
         props: {
-            myBus: myBusVue, // << No! undefined. unhappy. :o(
+           // No. Handle myBus stuff up on root/main.js/index.html<router-view>
+            // myBus: myBusVue, // << No! undefined. unhappy. :o(
             day: moment() // << Yes
             // "2017-09-12T10:51:51.512Z"
         }

@@ -1,7 +1,9 @@
 import Vue from 'vue' // COPY to Overview.vue ... << NO! Not needed there
 import './style.scss'
 
-import Overview from './components/Overview.vue'
+// LESSON 102 Now with router-view move this to /util/routes.js
+// import Overview from './components/Overview.vue'
+
 /* Move to Overview.vue: << YES!
 import MovieList from './components/MovieList.vue'
 import MovieFilter from './components/MovieFilter.vue'
@@ -70,6 +72,8 @@ Vue.use(VueRouter)
 // console.log('About to import routes') // not seen ?< till I added 'default' !
 import myRoutes from './util/routes'
 const myRouter = new VueRouter({
+    // https://router.vuejs.org/en/essentials/history-mode.html
+    // mode: 'history',
     routes: myRoutes,
 /*
     routes: [
@@ -122,9 +126,11 @@ new Vue({
         myBusVueDataName: myBusVue // Another shot at this... # 3AA Works! :o)
 
     },
+/* LESSON 102 - no longer used (see /util/routes.js, re: router-view)
     components: {
         'overview': Overview,
     },
+*/
     router: myRouter,
     created() {
         // console.log('CREATED myBusVue IN main? ', myBusVue) // Vue$3 {_uid:0}

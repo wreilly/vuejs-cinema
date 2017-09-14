@@ -8,7 +8,19 @@
         </div>
         <div class="movie-col-right">
             <div class="movie-title">
-                <h2>{{ movieItemThingFooBar.Title }}</h2>
+                <!--<router-link to="movie">-->
+                <!--<router-link to="/movie">-->
+                <!--<router-link to="/movie/:id">-->
+                <!-- Yes: 'single-quotes + '
+                <router-link v-bind:to="'/movie/' + id">-->
+                <!-- Yes: `backticks ${}` -->
+                <!--<router-link v-bind:to="`/movie/${id}`">-->
+                <!-- Yes: { object } (getting 'id' from component's 'data:' )-->
+                <!--<router-link v-bind:to="{ name: 'movieNamedRoute', params: { id: idFromimdb }}">-->
+                    <!-- Yes: { object } (getting 'id' from here in-line: )-->
+                    <router-link v-bind:to="{ name: 'movieNamedRoute', params: { id: movieItemThingFooBar.imdbID }}">
+                    <h2>router-link: {{ movieItemThingFooBar.Title }}</h2>
+                </router-link>
                 <span class="movie-rating">{{ movieItemThingFooBar.Rated }}</span>
                 &nbsp; <span class="movie-rating">{{ movieItemThingFooBar.imdbRating }}</span>
                 <div class="movie-sessions">
@@ -38,6 +50,17 @@
         // timesmylistForItem = user-checked boxes re: "After 6pm" etc.
         // todayForItem = passed down object that was created somewhere above (main.js!), capturing moment() to get "today"
 
+        /* Okay - this 'data:' approach works.
+        You could also more simply put this "id-getting snatch of code" in-lie into the router-link v-bind:to="" above
+        e.g.
+        <router-link v-bind:to="{ name: 'movieNamedRoute', id: movieItemThingFooBar.imdbID }"
+        And that way you can skip making it "declared data:" on the component.
+        Cheers.
+        */
+        data: function() {
+            return {
+                idFromimdb: this.movieItemThingFooBar.imdbID            }
+        },
         methods: {
             // Just for some de-bugging:
             gimmeMovieSessionTimeCommented(movieSession) {

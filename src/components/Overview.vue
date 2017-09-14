@@ -61,7 +61,7 @@ import MovieFilter from './MovieFilter.vue'
 // ATTEMPT! # 2
 //        props: ['day', 'myBusVueDataProp'], // << NO. FAILED.
 
-        /* ATTEMPT # 3
+        /* ATTEMPT # 3 works :o)
         Wish us luck
         */
         props: ['day', 'myBusVueDataPropNew'],
@@ -168,6 +168,7 @@ import MovieFilter from './MovieFilter.vue'
 // INITIALLY:
 //  Yes:        PROP PASSED IN: myBusVue << Well, not now with Attempt # 3..
 // this.myBusVue.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+
 //  ATTEMPT # 3  YES :o)      PROP PASSED IN: myBusVueDataPropNew
  this.myBusVueDataPropNew.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
             // Yes: PROTOTYPE DEFINED PROPERTY: $myBusVueProperty

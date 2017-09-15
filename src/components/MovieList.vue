@@ -185,6 +185,18 @@
              return hookCallback.apply(null, arguments);
              }
              */
+
+            // LESSON 105
+            this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPIPostGet', function(allThoseMovies) {
+                /* Hmm - YES, here in MOVIELIST we DO SEE this: (cf. DETAIL.VUE, where it is not seen)
+                 I guess, since this MOVIELIST components gets "created()" ?at same time as? its parent OVERVIEW, the "created()" Event from Overview gets triggered in time such that this listener is here in time to get the event being Emitted.
+                 Bon.
+                 I guess.
+                 */
+                console.log('MOVIELIST?? $on hmm allThoseMovies ? ', allThoseMovies)
+//       n/a here:         this.moviesHereInDetail = allThoseMovies // whamma-jamma
+            })
+
         }
     }
 </script>

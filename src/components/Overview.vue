@@ -116,13 +116,35 @@ import MovieFilter from './MovieFilter.vue'
 */
         },
         created() {
+            /* ******** This (OVERVIEW) is # 1 (of 2) API Calls in this little app. (whoa) ******* (OTHER is MAIN.JS) */
             this.$http.get('/api')
                 .then((response) => {
 //                    console.log('Hey! response.data? ', response.data)
                     this.moviesFromAPI = response.data // whamma-jamma
-//                    console.log('Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
+                    console.log('OVERVIEW Inside GET: Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
+
+                    /* ***** LESSON 105 ******
+                    * This did work */
+                    console.log('Inside GET, and Just before $EMIT: Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
+// Let's not EMIT till we did the GET: << Yes!
+                    this.$myBusVueProperty.$emit('overviewCreatedMoviesFromAPIPostGet', this.moviesFromAPI)
+
                 })
 
+            /* ***** LESSON 105 ******
+            This below did NOT work. See just above for what did.
+
+             $EMIT EVENT (to BUS)
+             CREATED() is the "Event"
+             PAYLOAD is All Those Movies From API
+             Why?
+             Going to be picked up by DETAIL.VUE
+             Set LISTENER $ON over on DETAIL.VUE
+            */
+            // TOO EARLY!
+            console.log('Just before $EMIT: Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
+
+            this.$myBusVueProperty.$emit('overviewCreatedMoviesFromAPI', this.moviesFromAPI) // << NOPE. TOO EARLY
 
             // ? Move from Overview.vue ( ? ) << YES!
 

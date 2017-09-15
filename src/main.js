@@ -85,7 +85,10 @@ const myRouter = new VueRouter({
 new Vue({
     el: '#app',
     data: {
-        // moviesFromAPI: [],
+        // moviesFromAPIMain: [],
+        // Let's take this 'API' ALL CAPS mode out of the equation, go with good old camelCase:
+        moviesFromApiMain: [],
+
         moment, // << 3rd party object, turned into a custom "defined property"
         // Now do this in refactored routes.js:
         // day: moment(), // "today"
@@ -138,14 +141,29 @@ new Vue({
         // console.log('CREATED this.$root.myBusVue IN main? ', this.$root.myBusVue) // this << undefined
         // console.log('CREATED myBusVue.$myBusPropertyReference IN main? ', myBusVue.$myBusPropertyReference) // undefined
 
-        /* Move to Overview.vue ( ? ) << YES!
+        /* Move to Overview.vue ( ? ) << YES! */
+         /* LESSON 105
+         Okay, funny business.
+         I had earlier successfully moved our API call DOWN from the Root Vue instance (here in MAIN.JS) to (what was then) the topmost Component OVERVIEW.VUE.
+         Worked, like a charm. :o)
+         NOW, owing to LESSON 105 Instructor Code biz, I need to make some VERY-NON-D.R.Y. code here, and I am *re-introducing* the API call back UP HERE in Root/Main.
+         (And yes, I am leaving it in place, down on Overview)
+         So, yes, I am calling the API TWICE (2x) in my tiny little app.
+         - Weird!
+         o Lazy!
+         * Innovative!
+         & Should work, just fine.
+         > Let's see... ... ...
+        */
+        /* ******** This (MAIN.JS) is # 2 (of 2) API Calls in this little app. (whoa) *******  (other is OVERVIEW.VUE) */
                 this.$http.get('/api')
                     .then((response) => {
-                        console.log('Hey! response.data? ', response.data)
-                        this.moviesFromAPI = response.data // whamma-jamma
-                        console.log('Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
+                        console.log('Hey! MAIN.JS response.data? ', response.data)
+                        // this.moviesFromAPIMain = response.data // whamma-jamma
+                        this.moviesFromApiMain = response.data // whamma-jamma
+                        console.log('Hey! Where are my moviesFromApiMain ? ', this.moviesFromApiMain)
                     })
-        */
+
 
 /*
 // ? Move to Overview.vue ( ? ) << YES!

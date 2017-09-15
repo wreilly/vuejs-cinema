@@ -179,7 +179,7 @@
         }, // /computed()
         created() {
             // Nothing here anymore... (what was here?) Maybe this console.log was just a test. Okay.
-            // console.log('Moment object, from Root Component, seen here in Child Component MovieList.vue (without importing Moment.js) ', this.$moment)
+            console.log('Moment object, from Root Component, seen here in Child Component MovieList.vue (without importing Moment.js) ', this.$moment)
             /*
               ƒ hooks () {
              return hookCallback.apply(null, arguments);
@@ -187,15 +187,49 @@
              */
 
             // LESSON 105
+/* "ATTEMPT 'A.'" (Failed)
+ // We never get in here, never "hear" that event:
+            this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPI', function(allThoseMovies) {
+*/
+
+/* "ATTEMPT 'B.'" (This WORKED (!), Here Anyway - (not on Detail.vue))
+* Note: Here in MovieList, this is just sort of a test. We do not USE this data, here. */
             this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPIPostGet', function(allThoseMovies) {
+
                 /* Hmm - YES, here in MOVIELIST we DO SEE this: (cf. DETAIL.VUE, where it is not seen)
                  I guess, since this MOVIELIST components gets "created()" ?at same time as? its parent OVERVIEW, the "created()" Event from Overview gets triggered in time such that this listener is here in time to get the event being Emitted.
                  Bon.
                  I guess.
+
+                 Further Info:
+                 Not a bad guess.
+                 - In Console I see:
+                 -- Main.js first
+                 -- Main.js (with its imported routes.js) knows what Component to put in <router-view>
+                 -- e.g. for '/' we get Overview.vue next
+                 -- Overview.vue does its thing, including bringing in child Components (e.g. MovieList.vue)
+                 -- MovieList.vue created() next
+                 ---  That of course means these .$on listeners are set up, right then. Good.
+                 -- Back to main.js for the Asycn API Call (our "# 2" Main.js API call)
+                 -- That event of the Main.js API Call is "heard" on our MovieList.vue listener. very good.
+                 -- We get the data onto MovieList. great.
                  */
                 console.log('MOVIELIST?? $on hmm allThoseMovies ? ', allThoseMovies)
 //       n/a here:         this.moviesHereInDetail = allThoseMovies // whamma-jamma
             })
+
+            /* "ATTEMPT 'B99.'" Get movies from MAIN.JS API call via Event Bus
+             20170915-0649
+>>       YES. Here on MovieList, this IS SEEN.
+>>       (But, as above on ATTEMPT 'B.', on Detail.vue it is NOT SEEN.)
+             */
+            this.$myBusVueProperty.$on('mainCreatedMoviesFromAPIPostGet', function(allThoseMovies) {
+                console.log('MOVIELIST $on hmm allThoseMovies FROM MAIN 2nd API CALL as EVENT BUS ? ', allThoseMovies) //
+                //
+// n/a here in MovieList >> this.moviesHereInDetail = allThoseMovies // whamma-jamma
+
+            })
+
 
         }
     }

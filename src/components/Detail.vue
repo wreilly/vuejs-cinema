@@ -72,6 +72,10 @@ No!:        'day' passed as v-bind: prop from <router-view>
             //  tt1352852 << Yep
 
             /* ** LESSON 105 This did NOT work ** */
+/* "ATTEMPT 'A.'" (Failed)
+            this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPI', function(allThoseMovies) {
+*/
+/* "ATTEMPT 'B.'" (Also Failed, Here Anyway) (but worked okay on MovieList.vue) */
             this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPIPostGet', function(allThoseMovies) {
                 /* Hmm - NEVER SEE this:
                  I guess, by the time this DETAIL components gets "created()", the Event was triggered earlier, over on Overview.
@@ -79,10 +83,221 @@ No!:        'day' passed as v-bind: prop from <router-view>
 
                  (I tried same $on listener over in MOVIELIST, where the console.log DOES get seen.)
                  */
-                console.log('DETAIL $on hmm allThoseMovies ? ', allThoseMovies) // Not Seen
+                console.log('DETAIL "ATTEMPT B."$on hmm allThoseMovies ? ', allThoseMovies) // Not Seen
                 // Never happens:
                 this.moviesHereInDetail = allThoseMovies // whamma-jamma
             })
+
+
+            /* "ATTEMPT 'B99.'" Get movies from MAIN.JS API call via Event Bus
+20170915-0649
+>>       NO. Here on Detail.vue, this IS *NOT* SEEN.
+                (Just like ATTEMPT 'B.' above.) (sigh)
+>>       (But, as above on ATTEMPT 'B.', over on MovieList.vue this IS SEEN.)
+
+So - same conclusion:
+An Event fired on "created()" of a higher-level component, happens TOO EARLY (and doesn't repeat) for a lower-level component like this Detail.vue
+
+             -------------
+             FOR NORMAL PATH BY USER:
+             = As before (on "ATTEMPT B."), also here in "ATTEMPT B99." the $emit event from Main.js, for its API call, is NOT seen/"heard" by this $on listener, down in Detail.vue.
+
+             NOTE THAT - IF USER DOES FUNNY BUSINESS: PASTES INTO BROWSER THE DETAIL URL DIRECTLY...
+             = then they *DO* get the $emit event, from Main.js, for its API call. Cheers.
+             -------------
+             */
+            this.$myBusVueProperty.$on('mainCreatedMoviesFromAPIPostGet', function(allThoseMovies) {
+                console.log('DETAIL "ATTEMPT B99." $on hmm allThoseMovies FROM MAIN 2nd API CALL as EVENT BUS ? ', allThoseMovies) //
+                //
+                this.moviesHereInDetail = allThoseMovies // whamma-jamma
+
+            })
         }
     }
+
+
+    /*
+
+
+     === 00 - HIGH LEVEL ======
+     MAIN.JS
+     (ROUTES.JS)
+     INDEX.HTML
+     OVERVIEW.VUE
+     MOVIELIST.VUE
+     MOVIEITEM.VUE
+     DETAIL.VUE
+     MOVIEITEM.VUE
+     =========================
+
+
+     === 01 - WORKING NOW; GIT COMMIT dc418a46; NOT YET CLEANED UP ===========
+     MAIN.JS
+     data: { moviesFromApiMain: [] },
+     created() { 2ND, NEW API CALL: return moviesFromApiMain }
+
+     ROUTES.JS
+     { path: '/',          component: Overview }
+     { path: '/movie/:id', component: Detail, props: true }
+
+     INDEX.HTML
+     // N.B.: v-bind attribute used only by Detail, not by Overview
+     <router-view v-bind:movies-from-api-main-to-detail="moviesFromApiMain">
+
+     OVERVIEW.VUE
+     <movie-list v-bind:movies-for-movie-list="moviesFromAPI">
+     data: { moviesFromAPI: [] },
+     created() { 1ST, ORIGINAL API CALL: return moviesFromAPI }
+
+     MOVIELIST.VUE
+     <movie-item
+     v-for="movie in filteredMovies"
+     v-bind:movie-item-thing-foo-bar="movie.movie">
+     props: ['moviesForMovieList' ... ]
+     computed: { filteredMovies( moviesForMovieList ) }
+
+     MOVIEITEM.VUE
+     <p>{{ movieItemThingFooBar.Title }}</p>
+     props: ['movieItemThingFooBar' ... ],
+
+     DETAIL.VUE
+     <movie-item v-bind:movie-item-thing-foo-bar="thisDetailMovie">
+     props: ['id', 'moviesFromApiMainToDetail'],
+     computed: { thisDetailMovie() { ... this.moviesFromApiMainToDetail.find(id) }
+
+     MOVIEITEM.VUE
+     (SAME AS ABOVE = RE-USE)
+     <p>{{ movieItemThingFooBar.Title }}</p>
+     props: ['movieItemThingFooBar' ... ],
+     =========================
+
+
+     === 02 - BIT OF (RECENT) HISTORY: "LESSON 105" ATTEMPT(S) USING *1ST* API results for $EMIT/$ON (FAILED) ==========
+     MAIN.JS
+     Object.defineProperty(Vue.prototype, 'myBusVueProperty', ...)
+     data: { moviesFromApiMain: [] },
+     created() { 2ND, NEW API CALL: return moviesFromApiMain }
+     // "ATTEMPT 'B99.'" $EMIT from MAIN.JS (intended for Detail.vue; does NOT work oh well)
+     this.$myBusVueProperty.$emit('mainCreatedMoviesFromAPIPostGet', this.moviesFromApiMain)
+
+     ROUTES.JS
+     { path: '/',          component: Overview }
+     { path: '/movie/:id', component: Detail, props: true }
+
+     INDEX.HTML
+     // N.B.: v-bind attribute used only by Detail, not by Overview
+     <router-view v-bind:movies-from-api-main-to-detail="moviesFromApiMain">
+
+     OVERVIEW.VUE
+     <movie-list v-bind:movies-for-movie-list="moviesFromAPI">
+     data: { moviesFromAPI: [] },
+     created() { 1ST, ORIGINAL API CALL: return moviesFromAPI }
+     ************************************************************
+     // LESSON 105 NEW: $EMIT to Event Bus from here
+     // Attempt 'A.' (Failed)
+     // Inside created(), but AFTER asynch API/GET (not good idea! :o(
+     this.$myBusVueProperty.$emit('overviewCreatedMoviesFromAPI', this.moviesFromAPI) // << NOPE. TOO EARLY
+
+     // Attept 'B.' (Worked, partly)
+     // Inside created(), but INSIDE of asynch API/GET (that's more like it! :o)
+     this.$myBusVueProperty.$emit('overviewCreatedMoviesFromAPIPostGet', this.moviesFromAPI) // << YES, INSIDE ASYNCH CALL
+     ************************************************************
+
+     MOVIELIST.VUE
+     <movie-item
+     v-for="movie in filteredMovies"
+     v-bind:movie-item-thing-foo-bar="movie.movie">
+     props: ['moviesForMovieList' ... ]
+     computed: { filteredMovies( moviesForMovieList ) }
+     ************************************************************
+     // LESSON 105 NEW: $ON listen on Event Bus, here
+     // Attempt 'A.' (Failed)
+     created() { this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPI') }
+     // Attempt 'B.' (Worked, here in MovieList.vue, but not on Detail.vue)
+     created() { this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPIPostGet') }
+     ************************************************************
+
+     MOVIEITEM.VUE
+     <p>{{ movieItemThingFooBar.Title }}</p>
+     props: ['movieItemThingFooBar' ... ],
+
+     DETAIL.VUE
+     <movie-item v-bind:movie-item-thing-foo-bar="thisDetailMovie">
+     props: ['id', 'moviesFromApiMainToDetail'],
+     computed: { thisDetailMovie() { ... this.moviesFromApiMainToDetail.find(id) }
+     ************************************************************
+     // LESSON 105: $ON listen on Event Bus
+     // Attempt 'A.' (Failed)
+     created() { this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPI') }
+     // Attempt 'B.' (Failed too, here on Detail.vue) (But worked in MovieList.vue)
+     created() { this.$myBusVueProperty.$on('overviewCreatedMoviesFromAPIPostGet') }
+     // ATTEMPT 'B99.'  (Failed too, here on Detail.vue) (But worked in MovieList.vue)
+     created() { this.$myBusVueProperty.$on('mainCreatedMoviesFromAPIPostGet', function(allThoseMovies) }
+     ************************************************************
+
+     MOVIEITEM.VUE
+     (SAME AS ABOVE = RE-USE)
+     <p>{{ movieItemThingFooBar.Title }}</p>
+     props: ['movieItemThingFooBar' ... ],
+     =========================
+
+
+
+
+
+
+
+     Interesting.
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+     1)
+     Go (as usual) to home page first,
+     http://127.0.0.1:8000/#/
+     Then follow link to DETAIL URL:
+     http://127.0.0.1:8000/#/movie/tt0379225
+
+     All you get is:
+     ^^^^ DEV CONSOLE: ^^^^^^^^^^^^^^^^^^^^
+     Detail.vue?b898:68 Detail, created()! PROPS this.id, this.day  tt0379225 undefined
+     Detail.vue?b898:71 Detail, created()! PARAMS this.$route.params.id  tt0379225
+     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+     That is, you do NOT get: (because the listenen-for event does NOT occur)
+     console.log('DETAIL "ATTEMPT B99." $on hmm allThoseMovies FROM MAIN 2nd API CALL as EVENT BUS ? ', allThoseMovies)
+
+
+     2)
+     Go *DIRECT* to DETAIL URL: (paste into browser location bar)
+     http://127.0.0.1:8000/#/movie/tt0379225
+
+     You DO get the Event from created() on MAIN :o)
+     ^^^^ DEV CONSOLE: ^^^^^^^^^^^^^^^^^^^^
+     myBusVue IN main?  Vue$3
+     Detail.vue?b898:68 Detail, created()! PROPS this.id, this.day  tt0379225 undefined
+     Detail.vue?b898:71 Detail, created()! PARAMS this.$route.params.id  tt0379225
+     main.js?3479:161 Hey! MAIN.JS response.data?  Array(9)
+     main.js?3479:164 Hey! Where are my moviesFromApiMain ?  Array(9)
+     main.js?3479:170 MAIN.js 2ND API CALL. Inside GET, and Just before $EMIT
+     Detail.vue?b898:101 DETAIL "ATTEMPT B99." $on hmm allThoseMovies FROM MAIN 2nd API CALL as EVENT BUS ?  Array(9)0: {__ob__: Observer}1: {__ob__: Observer}2: {__ob__: Observer}3: {__ob__: Observer}4: {__ob__: Observer}5: {__ob__: Observer}6: {__ob__: Observer}7: {__ob__: Observer}8: {__ob__: Observer}length: 9__ob__: Observer {value: Array(9), dep: Dep, vmCount: 0}__proto__: Array
+     ^^^^^^^^^^^^^^^^^^^^^^
+
+     3)
+     Go (as usual) to home page first,
+     http://127.0.0.1:8000/#/
+     Then follow link to DETAIL URL:
+     http://127.0.0.1:8000/#/movie/tt0379225
+     You get as above in # 1)
+     ^^^^ DEV CONSOLE: ^^^^^^^^^^^^^^^^^^^^ ...
+     BUT
+     Then hit browser *PAGE REFRESH*...
+     And you DO get all as seen above in #2)
+     ^^^^ DEV CONSOLE: ^^^^^^^^^^^^^^^^^^^^ ...
+     Tres bien.
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+     */
+
 </script>

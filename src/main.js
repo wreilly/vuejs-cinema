@@ -162,6 +162,15 @@ new Vue({
                         // this.moviesFromAPIMain = response.data // whamma-jamma
                         this.moviesFromApiMain = response.data // whamma-jamma
                         console.log('Hey! Where are my moviesFromApiMain ? ', this.moviesFromApiMain)
+
+
+                        /* ***** (more) LESSON 105 ******
+                         "ATTEMPT 'B99.'" here in MAIN.JS (vs. Overview.vue)
+                         */
+                        console.log('MAIN.js 2ND API CALL. Inside GET, and Just before $EMIT')
+// Let's not EMIT till we did the GET: << Yes!
+                        this.$myBusVueProperty.$emit('mainCreatedMoviesFromAPIPostGet', this.moviesFromApiMain)
+
                     })
 
 

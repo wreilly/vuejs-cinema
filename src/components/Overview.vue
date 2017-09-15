@@ -124,7 +124,8 @@ import MovieFilter from './MovieFilter.vue'
                     console.log('OVERVIEW Inside GET: Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
 
                     /* ***** LESSON 105 ******
-                    * This did work */
+                     "ATTEMPT 'B.'"
+                    * This did work, at least on MovieList.vue. But NOT on Detail.vue. */
                     console.log('Inside GET, and Just before $EMIT: Hey! Where are my moviesFromAPI? ', this.moviesFromAPI)
 // Let's not EMIT till we did the GET: << Yes!
                     this.$myBusVueProperty.$emit('overviewCreatedMoviesFromAPIPostGet', this.moviesFromAPI)
@@ -132,13 +133,14 @@ import MovieFilter from './MovieFilter.vue'
                 })
 
             /* ***** LESSON 105 ******
+             "ATTEMPT 'A.'"
             This below did NOT work. See just above for what did.
 
              $EMIT EVENT (to BUS)
              CREATED() is the "Event"
              PAYLOAD is All Those Movies From API
              Why?
-             Going to be picked up by DETAIL.VUE
+             Going to be picked up by DETAIL.VUE << Nope! Nor on MovieList.vue fwiw.
              Set LISTENER $ON over on DETAIL.VUE
             */
             // TOO EARLY!

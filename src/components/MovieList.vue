@@ -23,12 +23,64 @@
 -->
                 </div>
                 <div v-else>
+                    <!-- WAS:  MovieItem did its own Sessions processing.
+
                     <movie-item
                             v-for="movie in filteredMovies"
                             v-bind:movie-item-thing-foo-bar="movie.movie"
                     v-bind:movie-sessions="movie.sessions"
                             v-bind:timesmylist-for-item="timesmylist"
-                    v-bind:today-for-item="todayForList"></movie-item>
+                    v-bind:today-for-item="todayForList">
+-->
+
+                    <!-- NOW IS: (LESSON 107 - Slots)  Sessions processing now up on parent MovieList -->
+                    <movie-item
+                            v-for="movie in filteredMovies"
+                            v-bind:movie-item-thing-foo-bar="movie.movie">
+
+                    <!--
+                    - 'movie-item' used to "close" right here.
+                    -- Note that it used to have *NO* child element markup - Only attributes. fwiw.
+                    - Now with SLOT (on Child MovieItem), this component 'movie-item' does have child element markup
+                    -- And it therefore closes further down, below that newly-introduced movie-sessions markup (for the slot)
+                    </movie-item>
+                    -->
+
+<!--  LESSON 107 ** now SLOTS!  from (Child) MovieItem.vue -->
+
+                        <div class="movie-sessions">
+
+<!-- Was Like This, down in child MovieItem:
+('movieSessions' was name I gave to 'movie.sessions', as passed-in prop)
+MovieList had: v-bind:movie-sessions="movie.sessions"
+
+                            <div v-for="movieSession in filteredMovieSessionsByDayByTimeMethod(movieSessions)" class="session-time-wrapper">
+-->
+
+<!--  Now Like This, here in parent MovieList:
+ (retain the 'movie.sessions', simply. Cheers.)
+ -->
+                            <div v-for="movieSession in filteredMovieSessionsByDayByTimeMethod(movie.sessions)" class="session-time-wrapper">
+                                <!-- First one, let's Comment more: -->
+
+                                <!-- same little change: movie.sessions  *****
+                                <div v-if="movieSession.time === movieSessions[0].time" class="session-time">
+-->
+                                <div v-if="movieSession.time === movie.sessions[0].time" class="session-time">
+
+                                    <!-- Just quick way to "turn off" logic for checking first one (First session).
+                                    <div v-if="false" class="session-time"> -->
+                                    {{ gimmeMovieSessionTimeCommented(movieSession) }}
+                                </div>
+                                <div v-else class="session-time">
+                                        {{ gimmeMovieSessionTime(movieSession) }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /End of slot markup -->
+
+                    </movie-item>
+
                 </div>
             </div>
         </div>
@@ -78,6 +130,54 @@
                   return matched
               }
           },
+
+            /* ******************************* */
+            // LESSON 107 SLOTS
+            // - refactoring from MovieItem (child)
+            // up here to MovieList (parent)
+
+            filteredMovieSessionsByDayByTimeMethod(movieSessionsMyThing) {
+           /* ******************************* */
+           /* Just to note it, you can Rename The Hell Out Of It, if you feel like it:
+                // (movie.sessions) sent down (has to be correct)
+                // but then here, I can Rename it to (movieSessionsMyThing) if'n I feel like it. Sheers.
+                */
+                return movieSessionsMyThing
+                    .filter(this.sessionPassesTimeFilter)
+            },
+
+
+            // Just for some de-bugging:
+            gimmeMovieSessionTimeCommented(movieSession) {
+                console.log('WR__ -01- this ', this) // Vue$3 {_uid:14}
+                console.log('WR__ -02- this.$root ', this.$root) // Vue$3 {_uid:1}
+                // Note: In contrast to -C- and -D- below, here, -03- and -04- both work because ...
+                // ...My "definedProperty" simply has the SAME NAME, albeit with a dollar sign, ('$moment') as the actual property: ('moment')
+                // Whereas below (-C-, -D-) I gave the definedProperty a DIFFERENT NAME ('myBusVueProperty') (--on purpose, to test this out) Cheers.
+                console.log('WR__ -03- this.$root.moment ', this.$root.moment) // ƒ hooks () { return hookCallback.apply(null, arguments);
+                console.log('WR__ -04- this.$root.$moment ', this.$root.$moment) // ƒ hooks () { return hookCallback.apply(null, arguments);
+                console.log('WR__ -05- this.$moment ', this.$moment) // ƒ hooks () { return hookCallback.apply(null, arguments);
+                console.log('WR__ -06- this.moment ', this.moment) // undefined. Okay.
+
+                // ======== (As seen on Overview.vue; just checkin' here too.)
+                console.log('-A- this', this) // Vue$3 {_uid:13}
+                console.log('-B- this.$root', this.$root) // Vue$3 {_uid:1}
+                console.log('-C- this.$root.myBusVue', this.$root.myBusVue) // Vue$3 {_uid:0}
+                console.log('-D- this.$root.$myBusVue', this.$root.$myBusVue) // undefined
+                console.log('-C02- this.myBusVue', this.myBusVue) // undefined (NEED THAT .$root !
+                console.log('-D02- this.$myBusVue', this.$myBusVue) // undefined
+                console.log('-E- this.$root.myBusVueProperty', this.$root.myBusVueProperty) // undefined
+                console.log('-F- this.$root.$myBusVueProperty', this.$root.$myBusVueProperty) // Vue$3 {_uid:0}   :o)
+                console.log('-G- this.$myBusVueProperty', this.$myBusVueProperty) // Vue$3 {_uid:0}   :o)
+                // ========
+                return this.$moment(movieSession.time).format("h:mm A")
+            },
+            gimmeMovieSessionTime(movieSession) {
+                console.log('WR__ -99- movieSession.time, plain y not: ', movieSession.time) // 2017-09-12T17:30:00.000Z
+                return this.$moment(movieSession.time).format("h:mm A")
+            },
+
+
 
             /* ******************************* */
             sessionPassesTimeFilter(session) {

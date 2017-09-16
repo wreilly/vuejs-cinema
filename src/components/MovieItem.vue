@@ -23,11 +23,14 @@
                 </router-link>
                 <span class="movie-rating">{{ movieItemThingFooBar.Rated }}</span>
                 &nbsp; <span class="movie-rating">{{ movieItemThingFooBar.imdbRating }}</span>
+
+
+<!--  LESSON 107 ** now SLOTS! --- see MovieList.vue -----------
                 <div class="movie-sessions">
                     <div v-for="movieSession in filteredMovieSessionsByDayByTimeMethod(movieSessions)" class="session-time-wrapper">
-                        <!-- First one, let's Comment more: -->
+                        &lt;!&ndash; First one, let's Comment more: &ndash;&gt;
                         <div v-if="movieSession.time === movieSessions[0].time" class="session-time">
-                        <!--<div v-if="false" class="session-time">-->
+                        &lt;!&ndash;<div v-if="false" class="session-time">&ndash;&gt;
                             {{ gimmeMovieSessionTimeCommented(movieSession) }}
                         </div>
                         <div v-else class="session-time">
@@ -35,6 +38,17 @@
                         </div>
                     </div>
                 </div>
+-->
+                <!--
+                This slot will be used by the scenario:
+                 - MovieList.vue uses MovieItem.vue (wants Sessions info)
+
+                 But not by the scenario: (ignored effectively)
+                 - Detail.vue uses MovieItem.vue (no need for Sessions info)
+                -->
+                <slot></slot>
+
+
             </div>
         </div>
     </div>
@@ -44,7 +58,12 @@
     import myFrozenTimes from '../util/times'
 
     export default {
+/* WAS:  MovieItem did its own Sessions processing.
         props: ['movieItemThingFooBar', 'movieSessions', 'timesmylistForItem', 'todayForItem'],
+*/
+/* NOW IS: (LESSON 107 - Slots)  Sessions processing now up on parent MovieList */
+        props: ['movieItemThingFooBar'],
+
         // movieItemThingFooBar = all we got on that movie ...
         // movieSessions = a property actually on the movie object, but separated out for ease of processing
         // timesmylistForItem = user-checked boxes re: "After 6pm" etc.
@@ -62,6 +81,14 @@
                 idFromimdb: this.movieItemThingFooBar.imdbID            }
         },
         methods: {
+
+            // LESSON 107 SLOTS
+            // We refactor our ALL the methods here!
+            // Three are going to parent MovieList.vue instead.
+            // One is simply Commented Out (not needed here anymore) (sessionPassesTimeFilter(eachMovieSession))
+            // All four have to do with Sessions processing.
+            // Cheers.
+            /*
             // Just for some de-bugging:
             gimmeMovieSessionTimeCommented(movieSession) {
                 console.log('WR__ -01- this ', this) // Vue$3 {_uid:14}
@@ -87,11 +114,15 @@
                 // ========
                 return this.$moment(movieSession.time).format("h:mm A")
             },
+*/
+            /*
             gimmeMovieSessionTime(movieSession) {
                console.log('WR__ -99- movieSession.time, plain y not: ', movieSession.time) // 2017-09-12T17:30:00.000Z
                 return this.$moment(movieSession.time).format("h:mm A")
             },
+*/
             /* ********************* */
+            /*
             filteredMovieSessionsByDayByTimeMethod(movieSessions)  {
                 return movieSessions
                     .filter(this.sessionPassesTimeFilter)
@@ -107,11 +138,11 @@
                     // - BOTH checked = (bit odd but what the hey) We Boolean "OR" them together to create the set of ALL possibilities are good.
                     return true
                 } else if ( this.timesmylistForItem[0] === myFrozenTimes.BEFORE_6PM) {
-                    /* Finally, the real testing conditions.
+                    /!* Finally, the real testing conditions.
                     Our user has clicked one (and only one) of our 2 choices.
                     Is it "Before 6pm"? ...
                     See the array at its [0] position!
-                    */
+                    *!/
                     return this.$moment(eachMovieSession.time).hour() < 18
                 } else if (this.timesmylistForItem[0] === myFrozenTimes.AFTER_6PM) {
                     return this.$moment(eachMovieSession.time).hour() >= 18
@@ -119,6 +150,7 @@
                     console.log('You Really Should Never Get Here (MovieItem.vue sessionPassesTimeFilter(eachMovieSession)): ', eachMovieSession)
                 }
             }
-        }
+*/
+        } // /methods: {}
     }
 </script>

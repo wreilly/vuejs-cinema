@@ -20,9 +20,28 @@
             <div> {{ moviesFromApiMainToDetail }} </div>
 -->
             <!-- just [] for movie-sessions placeholder, for now -->
+
+
+            <!-- (LESSON 107. Just note re: below)
+There is a slot over in MovieItem.vue
+ It will be used by the scenario:
+ - MovieList.vue uses MovieItem.vue (wants Sessions info)
+
+ But not by the scenario: (ignored effectively)
+ - Detail.vue uses MovieItem.vue (no need for Sessions info)
+ Therefore as we see above, here in Detail.vue there is NO child element markup in this <movie-item> use. Nothing is sent to be used in that <slot>. Ok.
+
+ Also, we here remove the dummy placeholder not-needed
+ v-bind:movie-sessions="[]"   Bon.
+-->
+<!-- WAS:
             <movie-item
                     v-bind:movie-item-thing-foo-bar="thisDetailMovie"
                     v-bind:movie-sessions="[]"></movie-item>
+-->
+            <movie-item
+                    v-bind:movie-item-thing-foo-bar="thisDetailMovie"></movie-item>
+
             <p>at end of movie-item</p>
         </div>
     </div>

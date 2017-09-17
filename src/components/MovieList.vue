@@ -98,12 +98,60 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
     props: ['genresmylist', 'timesmylist', 'moviesForMovieList', 'todayForList' ],
         data: function() {
             return {
+                // Not working (?) Can I not put a just-received PROP onto a DATA property? hmm.
+//                moviesForMovieListData: this.moviesForMovieList
+                moviesForMovieListData: [], // just declare it... ? Seems better
+                // Hah. Above (list of movies) we are NOT *really* changing.
+                // We just need "a change" to occur so that reactive computed() filteredMovies() will re-run fer chrissakes.
+                // But below (today for list moment thing) DOES actually change. Hmm.
+                // Need to reconsider the code, refactor ? from todayForList to todayForListData everywhere. Hmm. Not so sure about that...
+                todayForListData: this.todayForList, // gonna work? gonna fail? likely latter
+//                todayForListData: this.$moment() // declare here too a "DATA" version, for the PROP. Why? So in code below we can change the value. OK on DATA, not OK on PROP. Cheers.
             }
         },
         components: {
             'movie-item': MovieItem,
         },
         methods: {
+            daySelectedMethodToCall(myPayloadThing) {
+                // TODO
+                console.log('daySelectedMethodToCall what got here? myPayloadThing ~= Moment object no? ', myPayloadThing) // Yes. ok.
+
+
+                /*
+
+                */
+                this.todayForListData = myPayloadThing // which is, daySelected (I believe)
+                console.log('****** daySelectedMethodToCall() ********************* this.todayForListData now should be same as daySelected: ', this.todayForListData)
+
+
+
+                // All right, we'll try it from here in a METHOD. (Goodness.)
+                // no                var tempMoviesForMovieList = this.moviesForMovieList // ? boh
+// no                this.moviesForMovieList = tempMoviesForMovieList // ? boh
+
+
+/*   NO. SEE VUE WARN BELOW. ("Don't do it on a PROP. Do it on a DATA.")
+                var mappedTempMoviesForMovieList = this.moviesForMovieList.map((eachMovie) => eachMovie) // just return, unchanged.
+                console.log('mappedTempMoviesForMovieList: ', mappedTempMoviesForMovieList)
+                this.moviesForMovieList = mappedTempMoviesForMovieList // ? boh-boh
+*/
+// Q. does any of the above trigger change on data/props such that computed() filteredMovies() re-runs? (With new selected day?) O la.
+                // A. Yah!
+
+                /* But: Interesting!
+                "vue.common.js?e881:481 [Vue warn]: Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "moviesForMovieList""
+                 */
+                /*
+                Okay, next up, let's try this instead:
+                 */
+                var mappedTempMoviesForMovieListData = this.moviesForMovieListData.map((eachMovie) => eachMovie) // just return, unchanged.
+                console.log('mappedTempMoviesForMovieListData: ', mappedTempMoviesForMovieListData)
+                this.moviesForMovieListData = mappedTempMoviesForMovieListData // ? boh-boh
+
+
+
+            },
           /* ******************************** */
           moviePassesGenreFilter(movie) {
           /* ******************************* */
@@ -187,7 +235,7 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
                  ROUTER-VIEW VIZ. CERTAIN PROPERTIES ...
                  Quite interesting. (LESSON 101)
                  When NOT in the vue-router, <router-view>, the below line DID WORK, with simply myBus:
-                 !this.todayForList.iSame()...
+                 !this.todayForList.isSame()...
                  Then, when IN the vue-router and <router-view>, todayForList was undefined; needed to use:
                  !this.$moment().isSame()...
 
@@ -197,8 +245,14 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
 // YES works
 // if (!this.$moment().isSame(session.time, 'day')) {
                 // Yes: (also)
+                console.log('sessionPassesTimeFilter() (top). this.todayForList is: ', this.todayForList)
+                console.log('sessionPassesTimeFilter() (top). this.todayForListData is: ', this.todayForListData)
+/* PROP:
                 if (!this.todayForList.isSame(session.time, 'day')) {
-                    console.log('NOT TODAY KID')
+*/
+/* DATA: */
+                if (!this.todayForListData.isSame(session.time, 'day')) {
+                    console.log('NOT TODAY, OR, NOT SELECTED DAY, KID')
                     return false
                 }
                 /*
@@ -235,7 +289,20 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
             /* ******************************* */
             filteredMovies() {
             /* ******************************* */
-                return this.moviesForMovieList
+                console.log('Here we are in the computed() filteredMovies(). La. ')
+                console.log('this.moviesForMovieList PROP ', this.moviesForMovieList)
+                console.log('this.moviesForMovieListData DATA (BEFORE?) ', this.moviesForMovieListData) // << ** INITIAL TIME - this *IS* Empty. okay
+                // (Subsequent runs (after day select clicks), it is not empty, it contains what it had from earlier fill-up, namely, yeah, all the movies. cheers.)
+
+                this.moviesForMovieListData = this.moviesForMovieList // wham the PROP onto the DATA (?)
+                console.log('this.moviesForMovieListData DATA (AFTER?) ', this.moviesForMovieListData)
+
+
+
+
+
+//                return this.moviesForMovieList // << PROP
+                return this.moviesForMovieListData // << DATA (from that PROP)
                 // 1st spin:
                     .filter(this.moviePassesGenreFilter)
                     // 2nd spin:
@@ -320,7 +387,7 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
 
             /* "ATTEMPT 'B99.'" Get movies from MAIN.JS API call via Event Bus
              20170915-0649
->>       YES. Here on MovieList, this IS SEEN.
+>>       YES. Here on MovieList, this IS SEEN. (Note: We don't USE this, here. Just looking at it.)
 >>       (But, as above on ATTEMPT 'B.', on Detail.vue it is NOT SEEN.)
              */
             this.$myBusVueProperty.$on('mainCreatedMoviesFromAPIPostGet', function(allThoseMovies) {
@@ -330,6 +397,95 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
 
             })
 
+            // LESSON 111
+            /*
+            The .$emit out to bus from DaySelect.vue like so:
+              this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
+             */
+
+            this.$myBusVueProperty.$on('daySelectedEventCallAMethod', this.daySelectedMethodToCall.bind(this))
+ /* (I followed this example, from Overview.vue:
+            this.myBusVueDataPropNew.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+*/
+
+            // This "in-line" function was NOT doing it for me. We'll try calling a function (above) instead.
+            this.$myBusVueProperty.$on('daySelectedEvent', function(daySelected) {
+
+                console.log('daySelectedEvent, what is this? ', this) // Vue$3 {_uid:0} << People, we are ON THE BUS!
+                console.log('daySelectedEvent, what is this.$myBusVueProperty? ', this.$myBusVueProperty) // undefined
+
+                console.log('$ON daySelectedEvent daySelected: ', daySelected)
+                // whamma the Moment object received
+                // onto our Prop here (its default value had been a Moment object for "today")
+
+                /* Q. Why no Vue Warn re: mutation of PROP 'todayForList' ? (We had warning doing so on moviesForList. hmm.)
+*/
+//                this.todayForList = daySelected
+//                console.log('this.todayForList now should be same as daySelected: ', this.todayForList)
+                this.todayForListData = daySelected
+                console.log('*************************** this.todayForListData now should be same as daySelected: ', this.todayForListData)
+
+                /* Problem:
+                Above is working viz. correct Moment object does get here, but no reactive data anything. Nothing changes. Hmm.
+
+                Maybe ... seems that... just whamma a new value on a Prop... doesn't trigger reactive etc. ... inside of a computed() (i.e. our "filteredMovies()")... when the Prop is not actually (lexically) inside that computed(), but is instead further buried in a method called by/from that computed(). Hmm. Hmm.
+
+                I need for the new value in 'todayForList' (which is now the user-selected day, e.g. Tue 09/19) to get re-run through the second filter 'sessionPassesTimeFilter. How to do? I thought it would/might happen automatgically, thanks to reactive Vue, computed() property, and all that jazz. Hmm.
+                */
+                /* Q. Do I have to goose/(re)-call/invoke the computed() property filteredMovies() myself? seems odd
+                 A. No!: "vue.common.js?e881:568 TypeError: this.filteredMovies is not a function"
+                this.filteredMovies() // << ??
+
+                 "vue.common.js?e881:481 [Vue warn]: Error in event handler for "daySelectedEvent": "TypeError: this.filteredMovies is not a function""
+               this.filteredMovies // << ??
+
+                 Q.2. Howzabout I here in code explicitly run a method to do the same? (as filteredMovies()) ? Hmm.
+                A.2. ?? (provisional) ?? - That is not sounding right.
+                Something like: re-paste in (non-D.R.Y.) code like:
+                (But, how would this work? where are we sending the results? on to our computed() property "filteredMovies" ? Seems v. unlikely ...
+                ------------
+                 return this.moviesForMovieList
+                 // 1st spin:
+                 .filter(this.moviePassesGenreFilter)
+                 // 2nd spin:
+                 // For each movie, iterate its sessions.
+                 .filter((movie) => {
+                 return movie.sessions.find(this.sessionPassesTimeFilter)
+                 })
+                 ------------
+
+                Q.3. How about I .$emit another, subsequent event. To be listened to by this same component (MovieList), which hopefully will trigger re-running filteredMovies() ?
+                A.3. provisional - worth a try.
+                A.3. Well, I am unable here inside of an event handler function, to access that (durned) bus, it seems. this.$myBusVueProperty and this.$root.$myBusVueProperty don't work. hmm.
+
+                */
+                // Hmm, does slinging the payload around of a Prop really work? Dunno.
+                // "vue.common.js?e881:568 TypeError: Cannot read property '$emit' of undefined"
+         // Nope:       this.$myBusVueProperty.$emit('weGotNewTodayForList', this.todayForList)
+         // Nope:      this.$root.$myBusVueProperty.$emit('weGotNewTodayForList', this.todayForList)
+                // People, we are ON THE BUS, so, just call .$emit already!
+                this.$emit('weGotNewTodayForList', this.todayForList)
+            })
+
+            this.$myBusVueProperty.$on('weGotNewTodayForList', function() {
+                // hmm. am i chasing my tail? sheesh.
+                // need to get computed() filteredMovies() to re-run the method
+                // sessionPassesTimeFilter(), with the just-updated todayForList
+                // Wish us luck
+                // Feels like we're in the Wrong Place. (sigh)
+                // Looks like the only piece of data filteredMovies() is "watching" would be
+                // the Prop (not data{}) 'moviesForMovieList'
+                // What if I slightly alter it? Does filteredMovies() wake up and execute??
+                console.log('this ? ', this) // Da Bus! (whoa) Vue$3 {_uid:0}
+                console.log('this.moviesForMovieList: ', this.moviesForMovieList) // undefined. hmm
+// no                var tempMoviesForMovieList = this.moviesForMovieList // ? boh
+// no                this.moviesForMovieList = tempMoviesForMovieList // ? boh
+
+                // Because it is UNDEFINED (yeesh), .map() don't work none:
+//                var mappedTempMoviesForMovieList = this.moviesForMovieList.map((eachMovie) => eachMovie) // just return, unchanged.
+//                console.log('mappedTempMoviesForMovieList: ', mappedTempMoviesForMovieList)
+//                this.moviesForMovieList = mappedTempMoviesForMovieList // ? boh-boh
+            })
 
         }
     }

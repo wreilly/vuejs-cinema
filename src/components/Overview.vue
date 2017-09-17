@@ -1,6 +1,7 @@
 <template>
     <div id="overview">
         <div id="main">
+            <day-select></day-select>
             <movie-list
                     v-bind:genresmylist="genre"
                     v-bind:timesmylist="time"
@@ -35,6 +36,7 @@
 
 import { myUtilRootCheckFilterBusMethod } from '../util/mybus' // << YES! Needed here
 
+import DaySelect from './DaySelect.vue'
 import MovieList from './MovieList.vue'
 import MovieFilter from './MovieFilter.vue'
 
@@ -81,6 +83,7 @@ import MovieFilter from './MovieFilter.vue'
             }
         },
         components: {
+            'day-select': DaySelect,
             'movie-list': MovieList,
             'movie-filter': MovieFilter,
         },
@@ -196,7 +199,7 @@ import MovieFilter from './MovieFilter.vue'
 //  ATTEMPT # 3  YES :o)      PROP PASSED IN: myBusVueDataPropNew
  this.myBusVueDataPropNew.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
             // Yes: PROTOTYPE DEFINED PROPERTY: $myBusVueProperty
-// YES >>            this.$myBusVueProperty.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
+// YES >>            this.$myBusVueProperty.$onget'check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
             /* **************** */
 
 /*

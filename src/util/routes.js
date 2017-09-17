@@ -34,6 +34,7 @@ export default [
 
     {
         path: '/',
+        name: 'home', // used/called from Detail.vue "Back to results"
         component: Overview,
         props: {
            // No. Handle myBus stuff up on root/main.js/index.html<router-view>

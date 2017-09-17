@@ -40,8 +40,47 @@ There is a slot over in MovieItem.vue
                     v-bind:movie-sessions="[]"></movie-item>
 -->
             <movie-item
-                    v-bind:movie-item-thing-foo-bar="thisDetailMovie"></movie-item>
+                    v-bind:movie-item-thing-foo-bar="thisDetailMovie">
+                Ship ahoy we're INSIDE movie-item
+                <div class="movie-details">
+                    <p class="movie-genre">{{ thisDetailMovie.Genre }}</p>
+                    <p class="movie-plot">{{ thisDetailMovie.Plot }}</p>
+                    <table>
+                        <tr>
+                            <td>Released date: </td>
+                            <td>{{ thisDetailMovie.Released  }}</td>
+                        </tr>
+                        <tr>
+                            <td>Running Time: </td>
+                            <td>{{ thisDetailMovie.Runtime  }}</td>
+                        </tr>
+                        <tr>
+                            <td>Director: </td>
+                            <td>{{ thisDetailMovie.Director  }}</td>
+                        </tr>
+                        <tr>
+                            <td>Cast: </td>
+                            <td>{{ thisDetailMovie.Actors  }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <!-- (outside movie-item, actually.)
+                <router-link to="/">Back to results</router-link>-->
+            </movie-item>
+            <div class="home">
+                <router-link v-bind:to="{ name: 'home' }">Back to Home Page</router-link> N.B. It does NOT return you to your Search/Filter Results. Solly!
+<!--
+https://router.vuejs.org/en/api/router-link.html
 
+                <router-link v-bind:to="{
+                name: 'home',
+                  params: {
+                  genre: ['Comedy']
+                  }
+}">Back to Home Page</router-link> Bootless shot at passing a hard-coded "parameter" to retain the Search/Filter. (Hah! Laughable!)
+                Weird. Doesn't work (of course), but no error/warning/anything, either oh well.
+-->
+            </div>
             <p>at end of movie-item</p>
         </div>
     </div>
@@ -69,6 +108,7 @@ No!:        'day' passed as v-bind: prop from <router-view>
         },
         computed: {
           thisDetailMovie() {
+              // >> N.B. We send back the SUB-PROPERTY '.movie' <<
               let foundMovie = this.moviesFromApiMainToDetail.find((eachMovie) => eachMovie.movie.imdbID === this.id) // this.$route.params.id << I just happened to make that VueRouter route.param into a prop
 
               // one level deeper (.movie) is what we want...
@@ -118,10 +158,13 @@ So - same conclusion:
 An Event fired on "created()" of a higher-level component, happens TOO EARLY (and doesn't repeat) for a lower-level component like this Detail.vue
 
              -------------
-             FOR NORMAL PATH BY USER:
+             FOR NORMAL PATH BY USER: (click on title link on MovieList/MovieItem screen)
              = As before (on "ATTEMPT B."), also here in "ATTEMPT B99." the $emit event from Main.js, for its API call, is NOT seen/"heard" by this $on listener, down in Detail.vue.
 
-             NOTE THAT - IF USER DOES FUNNY BUSINESS: PASTES INTO BROWSER THE DETAIL URL DIRECTLY...
+             NOTE THAT - IF USER DOES FUNNY BUSINESS:
+             1) PASTES INTO BROWSER THE DETAIL URL DIRECTLY... (
+             2) or when on this page does Browser Page Refresh,
+             3) or on MovieList/MovieItem screen, do Right-Click "Open in New Tab/Window"
              = then they *DO* get the $emit event, from Main.js, for its API call. Cheers.
              -------------
              */

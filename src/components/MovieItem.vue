@@ -4,7 +4,9 @@
         {{ movieItemThingFooBar.Title }}
         </p>
         <div class="movie-col-left">
-            <img v-bind:src="movieItemThingFooBar.Poster" alt="">
+            <router-link v-bind:to="{ name: 'movieNamedRoute', params: { id: movieItemThingFooBar.imdbID }}">
+                <img v-bind:src="movieItemThingFooBar.Poster" alt="">
+            </router-link>
         </div>
         <div class="movie-col-right">
             <div class="movie-title">
@@ -89,6 +91,8 @@
             // All four have to do with Sessions processing.
             // Cheers.
             /*
+
+
             // Just for some de-bugging:
             gimmeMovieSessionTimeCommented(movieSession) {
                 console.log('WR__ -01- this ', this) // Vue$3 {_uid:14}

@@ -73,7 +73,7 @@ Vue.use(VueRouter)
 import myRoutes from './util/routes'
 const myRouter = new VueRouter({
     // https://router.vuejs.org/en/essentials/history-mode.html
-    // mode: 'history',
+   // mode: 'history', // << Pas encore, but, seems to work ok. Hmm. (Lesson 109)...
     routes: myRoutes,
 /*
     routes: [

@@ -9,6 +9,13 @@
                     v-for="yeahDay in days"
                     v-on:click="selectDay">{{ myFormatDay(yeahDay) }}
             </li>
+            <!-- LESSON 113 For MOBILE... -->
+            <li class="day-selector">
+                <span class="dec"
+                v-on:click="selectMobile('dec')"></span>
+                <span class="inc"
+                v-on:click="selectMobile('inc')"></span>
+            </li>
         </ul>
     </div>
 </template>
@@ -27,7 +34,8 @@ BROWSER APP:
     (May or may not match your SERVER STARTUP 7 days. Cheers.)
      */
     export default {
-        // props: ['selected'], // << Just to note, Instructor does this; also, he deletes the DATA 'selectedDay: moment()' thing below. I am not doing that. Cheers.
+        // props: ['selected'], // << Just to note, Instructor does this; Passed-in from Overview.vue, where it is also simply "today" from a moment() thingie, just like I have my DATA property below for same purpose. Cheers.
+        // also, he deletes the DATA 'selectedDay: moment()' thing below. I am not doing that. Cheers.
         data() {
             return {
                 selectedDay: this.$moment(), // default to "today"
@@ -36,7 +44,7 @@ BROWSER APP:
                 days: [ 0, 1, 2, 3, 4, 5, 6 ].map(num => this.$moment().add(num, 'days'))
             }
         },
-        /*
+        /* Moment objects:
          days:Array[7]
          0:"2017-09-16T13:49:53.138Z"
          1:"2017-09-17T13:49:53.139Z"
@@ -47,6 +55,47 @@ BROWSER APP:
          6:"2017-09-22T13:49:53.140Z"
         */
          methods: {
+             selectMobile(which) {
+                 console.log('Ye gods 01. selectMobile which: ', which)
+               if (which === 'inc') {
+                   console.log('Ye gods 02. selectMobile inside "inc" : ')
+                   if (this.selectedDay.isSame(this.days[this.days.length])) {
+                       // Already on latest available day
+                       // Do not increment further
+                       // TODO Fix!
+                   } else {
+                       // Okay to increment
+                       console.log('Ye gods 03. selectMobile Okay to increment : this.selectedDay._d BEFORE ', this.selectedDay._d) // YES. BEFORE  Thu Sep 21 2017
+                       var dayMore =  this.selectedDay.add(1, 'days')
+                       console.log('dayMore._d ', dayMore._d)
+                       console.log('dayMore ', dayMore)
+                       this.selectedDay = dayMore
+                       console.log('Ye gods 04. selectMobile Okay to increment : this.selectedDay._d AFTER ', this.selectedDay._d) // YES!  AFTER  Fri Sep 22 2017
+                   }
+               }  else {
+                   // 'dec'
+                   console.log('Ye gods 02A. selectMobile inside "dec"')
+                  console.log('Ye gods 02AA. selectMobile inside "dec" : this.selectedDay._d', this.selectedDay._d)
+
+                   if (this.selectedDay.isSame(this.days[0])) {
+                       // Already on earliest available day ("today")
+                       // Do not decrement further
+                       console.log('OOPS. It is today. Cannot go back in time this.selectedDay ', this.selectedDay._d)
+                   } else {
+                       var dayLess = this.selectedDay.subtract(1, 'days')
+                       console.log('dayLess._d ', dayLess._d)
+                       this.selectedDay = dayLess
+                   }
+               }
+                 /* Hah. Hmm. If I'm lucky, here on the MOBILE "click" event, I can call the SAME DAMN METHOD (on the Bus), to do the Big Change (on this.selectedDate).
+                  And that in turn will do the SAME DAMN THING to send that date to Vue.js magic and re-run the movie filter computed() and ALL THAT JAZZ.
+                  Wish us (me) L-U-C-K.
+                  Well, seems N-O-T. Hmmph.
+                  */
+                 // $$$  -03AMOBILE- $$$ CALL A METHOD over on: (/UTIL/MYBUS.JS)  $$$$$$$$$$$$$$$
+                 this.$myBusVueProperty.$emit('daySelectedEventCallAMethodUtilBus', this.selectedDay)
+// $$$$$$$$$$$$$$$$$$$$$$$$
+             },
             isActive(dayMomentObject) {
               return dayMomentObject.isSame(this.selectedDay, 'day')
             },

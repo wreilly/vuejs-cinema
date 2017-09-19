@@ -38,7 +38,7 @@ function daySelectedMethodUtilBusToCall(dayPayload) {
     // Owing to, thanks to, .bind(), 'this' here continues to refer to ... MovieList.vue component (99% sure)
     // In any event, it is correctly referring to whatever the hell it is that it needs to refer to. :)
 
-    console.log('daySelectedMethodUtilBusToCall -- dayPayload thing ~= Moment object no? ', dayPayload) //
+    console.log('??????? daySelectedMethodUtilBusToCall -- dayPayload._d thing ~= Moment object no? ', dayPayload._d) //
 
 
     /*
@@ -50,7 +50,7 @@ function daySelectedMethodUtilBusToCall(dayPayload) {
     // THAT in turn (immediately!?) updates (reactive, Vue.js magic) the MovieList.vue DATA property I called 'todayForListData'. (I know, crazy.)
     this.todayForListData = dayPayload // whamma. oughta work. methinks.
 
-    console.log('*** GOOD the THIRD (method ON DA BUS to call) *** daySelectedMethodUtilBusToCall() ********************* this.todayForListData now should be same as daySelected: ', this.todayForListData) // YEP
+    console.log('*** GOOD the THIRD (method ON DA BUS to call) *** daySelectedMethodUtilBusToCall() ********************* this.todayForListData._d now should be same as daySelected: ', this.todayForListData._d) // YEP
 
 }
 

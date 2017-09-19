@@ -3,7 +3,9 @@
         <ul class="days">
             <!--<li class="day">Today</li>-->
             <li
-                    class="day"
+                    v-bind:class="{
+                    day: true,
+                    active: isActive(yeahDay) }"
                     v-for="yeahDay in days"
                     v-on:click="selectDay">{{ myFormatDay(yeahDay) }}
             </li>
@@ -43,7 +45,10 @@ BROWSER APP:
          5:"2017-09-21T13:49:53.140Z"
          6:"2017-09-22T13:49:53.140Z"
         */
-        methods: {
+         methods: {
+            isActive(dayMomentObject) {
+              return dayMomentObject.isSame(this.selectedDay, 'day')
+            },
             selectDay(dayClickedEvent) {
                 // Q. A Moment object, n'est-ce pas?
                 // A. Oui: isAMomentObject: true
@@ -53,8 +58,44 @@ BROWSER APP:
                 // Assigns the correct Moment object from out of the 7-day array for the day clicked on (e.g. Tue 09/19)
                 this.selectedDay = this.days.find((eachDay) => this.myFormatDay(eachDay) === dayClickedEvent.target.innerText)
                 console.log('selectedDay (Moment object), at END of selectDay() is: ', this.selectedDay)
-//                this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
-                this.$myBusVueProperty.$emit('daySelectedEventCallAMethod', this.selectedDay)
+
+                /* EXPLORING 2017-09-18
+                * Hmm. FAILED.
+                * This did NOT get computed() filteredMovies() to re-execute.
+                * sigh.
+                * Why?
+                * Don't (quite) know.
+                * Only difference I see is this .$emit ("daySelectedEvent") is listened to by a .$on (in MovieList) that has its function logic IN-LINE.
+                 * The other .$emit below ("daySelectedEventCallAMethod") is listened to by another .$on (in MovieList) that does the SAME function logic, but in a called method. WTF.
+                 * They BOTH succeed in getting the MovieList DATA property ("todayForListData') to be modified, updated with the user's selected day (e.g. Thu 09/21).
+                 * But ONLY ONE of them causes the computed() filteredMovies() to get re-run. (Namely, the "call a method" one.) Hmm.
+                 * That Vue.js-driven "computed()" thing is watching/monitoring/listening for certain things ... What exactly are they?
+                 *
+                 * https://vuejs.org/v2/guide/computed.html#Basic-Example
+                 * "Vue is aware that vm.reversedMessage depends on vm.message, so it will update any bindings that depend on vm.reversedMessage when vm.message changes."
+                 *
+                 * Okay, above is fine, but...
+                 * I have a computed() property that doesn't really have any data properties, to watch, etc.
+                 * Instead it has reference to a couple of functions, elsewhere, deeper down, not directly/lexically (?) right there inside the computed() property itself:
+                 * - computed() { filteredMovies() { .filter(Genre).filter(Time) }}
+                 * Q. So, if a data property down inside those referenced function calls changes, does computed() track THOSE ?? ??
+                 *
+                * */
+
+                // "BAD" does not call a method
+                // NEWS FLASH:
+                // ******* NEWS FLASH. You *can* use this.
+                // (Over in MovieList.vue: Anonymous function (not "in-line")
+                // function() {}.bind(this)   // << who knew. put the damned .bind() right off the closing curly brace. hot damn. works.
+                this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
+
+                // For this .$emit, the listener .$on is over on MovieList.vue
+                // Why?
+                // Because that is the component with the computed() filteredMovies(), that uses inputs like Genre, Time, and now this additional one of Day
+                // (Actually, it already did have 'day' in it, it was just baked in that 'day' was "today". We're expanding on that. :o)
+                /* WORKS. 2017-09-18 */
+                // "GOOD" Calls a method
+//                this.$myBusVueProperty.$emit('daySelectedEventCallAMethod', this.selectedDay)
             },
           myFormatDay(rawDayObj) {
               if (rawDayObj.isSame(this.$moment(), 'day')) {

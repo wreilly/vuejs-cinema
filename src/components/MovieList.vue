@@ -104,8 +104,10 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
                 // Hah. Above (list of movies) we are NOT *really* changing.
                 // We just need "a change" to occur so that reactive computed() filteredMovies() will re-run fer chrissakes.
                 // But below (today for list moment thing) DOES actually change. Hmm.
-                // Need to reconsider the code, refactor ? from todayForList to todayForListData everywhere. Hmm. Not so sure about that...
+                // Need to reconsider the code, refactor ? from todayForList to todayForListData everywhere. Hmm. Not so sure about that... Yes, did need to refactor, a smidge.
                 todayForListData: this.todayForList, // gonna work? gonna fail? likely latter
+                // Hey, above seems to have WORKED. :o)
+
 //                todayForListData: this.$moment() // declare here too a "DATA" version, for the PROP. Why? So in code below we can change the value. OK on DATA, not OK on PROP. Cheers.
             }
         },
@@ -114,19 +116,23 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
         },
         methods: {
             daySelectedMethodToCall(myPayloadThing) {
-                // TODO
+
                 console.log('daySelectedMethodToCall what got here? myPayloadThing ~= Moment object no? ', myPayloadThing) // Yes. ok.
 
 
                 /*
-
+WORKS! 'Ta-da'. :o)
                 */
-                this.todayForListData = myPayloadThing // which is, daySelected (I believe)
-                console.log('****** daySelectedMethodToCall() ********************* this.todayForListData now should be same as daySelected: ', this.todayForListData)
+                this.todayForListData = myPayloadThing // which is, daySelected (I believe) YEP.
+                console.log('*** GOOD (method call) *** daySelectedMethodToCall() ********************* this.todayForListData now should be same as daySelected: ', this.todayForListData) // YEP
 
 
+// TURNS OUT: No need to "refresh/mutate" the *list of movies*.
+                // Instead, we just change the day and that's enough to trigger re-running of computed() filteredMovies(), here in MovieList.vue
+                // It appears that the day variable now being made into not just a Prop (passed-in), but also as DATA property, then, Vue.js does the Whole Reactive Thing for you.
+//                Yummy.
 
-                // All right, we'll try it from here in a METHOD. (Goodness.)
+                // OLD NEWS: All right, we'll try it from here in a METHOD. (Goodness.)
                 // no                var tempMoviesForMovieList = this.moviesForMovieList // ? boh
 // no                this.moviesForMovieList = tempMoviesForMovieList // ? boh
 
@@ -145,9 +151,13 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
                 /*
                 Okay, next up, let's try this instead:
                  */
+// All right. Interesting. NO NEED (!) to "change" the movies list:   Just the change on the day selected, is your trigger, for computed() filteredMovies() to re-execute.
+//                I THINK
+/* Not needed apparently:
                 var mappedTempMoviesForMovieListData = this.moviesForMovieListData.map((eachMovie) => eachMovie) // just return, unchanged.
                 console.log('mappedTempMoviesForMovieListData: ', mappedTempMoviesForMovieListData)
                 this.moviesForMovieListData = mappedTempMoviesForMovieListData // ? boh-boh
+*/
 
 
 
@@ -294,15 +304,17 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
                 console.log('this.moviesForMovieListData DATA (BEFORE?) ', this.moviesForMovieListData) // << ** INITIAL TIME - this *IS* Empty. okay
                 // (Subsequent runs (after day select clicks), it is not empty, it contains what it had from earlier fill-up, namely, yeah, all the movies. cheers.)
 
+/* Not needed, apparently:
                 this.moviesForMovieListData = this.moviesForMovieList // wham the PROP onto the DATA (?)
                 console.log('this.moviesForMovieListData DATA (AFTER?) ', this.moviesForMovieListData)
+*/
 
 
 
 
 
-//                return this.moviesForMovieList // << PROP
-                return this.moviesForMovieListData // << DATA (from that PROP)
+                return this.moviesForMovieList // << PROP
+//                return this.moviesForMovieListData // << DATA (from that PROP)
                 // 1st spin:
                     .filter(this.moviePassesGenreFilter)
                     // 2nd spin:
@@ -399,22 +411,27 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
 
             // LESSON 111
             /*
-            The .$emit out to bus from DaySelect.vue like so:
+            The .$emit out to the bus comes from DaySelect.vue like so:
               this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
              */
-
+            /* ******* YES WE *ARE* USING THIS: method() ************ */
             this.$myBusVueProperty.$on('daySelectedEventCallAMethod', this.daySelectedMethodToCall.bind(this))
- /* (I followed this example, from Overview.vue:
+ /* I followed this example, from Overview.vue: esp. re: use of .bind(this)
+
             this.myBusVueDataPropNew.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
 */
 
             // This "in-line" function was NOT doing it for me. We'll try calling a function (above) instead.
+            /* ******* NO - WE ARE *NOT* USING THIS: in-line funct ************ */
+            // ******* NEWS FLASH. You *can* use this.
+            // Anonymous function (not "in-line")
+            // function() {}.bind(this)   // << who knew. put the damned .bind() right off the closing curly brace. hot damn. works.
             this.$myBusVueProperty.$on('daySelectedEvent', function(daySelected) {
 
                 console.log('daySelectedEvent, what is this? ', this) // Vue$3 {_uid:0} << People, we are ON THE BUS!
                 console.log('daySelectedEvent, what is this.$myBusVueProperty? ', this.$myBusVueProperty) // undefined
 
-                console.log('$ON daySelectedEvent daySelected: ', daySelected)
+                console.log('$ON daySelectedEvent daySelected: ', daySelected) // << YEP. Moment object, for the day the user clicked on. Bon.
                 // whamma the Moment object received
                 // onto our Prop here (its default value had been a Moment object for "today")
 
@@ -422,8 +439,39 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
 */
 //                this.todayForList = daySelected
 //                console.log('this.todayForList now should be same as daySelected: ', this.todayForList)
+                // Now, whamma onto a DATA property instead of a PROP:
                 this.todayForListData = daySelected
-                console.log('*************************** this.todayForListData now should be same as daySelected: ', this.todayForListData)
+
+                console.log('**** BAD (no method call) *********************** this.todayForListData now should be same as daySelected: YES, IT IS ', this.todayForListData) // << YEP. TRUE. YES. (double-checked) at least on CONSOLE.LOG!
+                /* 2017-09-18-0749:
+                BUT - in Vue inspector, the Component MOVIELIST.vue
+                still has UNCHANGED:
+                 todayForListData:"2017-09-18T11:41:16.865Z"
+                 Why?
+                 Don't know.
+                 ---- (interlude) ---
+                 Ah, damn. Once again, it is all about "this."
+                 sigh.
+                 My 'this' right here is the BUS. Vue$3 {_uid:0}
+                 OK, "broke the code" (once again. sigh.)
+                 Vue inspector:
+                 <Root> | data | myBusVueDataName | Object | todayForListData
+                 Sheesh.
+                 I thought I was updating/modifying the MOVIELIST "todayForListData", but I WAS WRONG about that!!!
+                 I was simply sticking an object onto my BUS.
+                 And Vue.js nor JavaScript nor server nor browser was complaining about any of that.
+                 oh bother.
+
+                 So, can I get from the "this" being the BUS, to be able to reference the "this" that is the component I am on? (MovieList.vue)
+                 Hmm.
+
+                 It is looking to me like the answer is:
+                 Hey. Once you get on the BUS (.$emit, .$on), your 'this' has become the BUS, which is Vue$3 {_uid}, and that bad boy has NO "$root" or "$parents" etc etc. that I can see. It is a sort of orphan unconnected Vue instance floating there in space.
+                  You can NOT expect to (directly (?)) reference the other Vue instances (like Root, MovieList etc) from this damned BUS.
+                  So what do you do?
+                  Well, like I did, you, from inside your .$on listener, you CALL OUT to Methods, and you use .bind(this) to GET STUFF TO WORK.
+                  By god & golly.
+                */
 
                 /* Problem:
                 Above is working viz. correct Moment object does get here, but no reactive data anything. Nothing changes. Hmm.
@@ -464,8 +512,11 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
          // Nope:       this.$myBusVueProperty.$emit('weGotNewTodayForList', this.todayForList)
          // Nope:      this.$root.$myBusVueProperty.$emit('weGotNewTodayForList', this.todayForList)
                 // People, we are ON THE BUS, so, just call .$emit already!
+                // Not Working For Me: This experiment in $EMITTING off the 1st $ON, to listen for it on a 2nd $ON. Quite the cwazy pattern. yeesh.)
+                // NEWS FLASH: Hey! Got this to work.
+                // function() {}.bind(this)   // << who knew. put the damned .bind() right off the closing curly brace. hot damn. works.
                 this.$emit('weGotNewTodayForList', this.todayForList)
-            })
+            }.bind(this))
 
             this.$myBusVueProperty.$on('weGotNewTodayForList', function() {
                 // hmm. am i chasing my tail? sheesh.
@@ -476,7 +527,7 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
                 // Looks like the only piece of data filteredMovies() is "watching" would be
                 // the Prop (not data{}) 'moviesForMovieList'
                 // What if I slightly alter it? Does filteredMovies() wake up and execute??
-                console.log('this ? ', this) // Da Bus! (whoa) Vue$3 {_uid:0}
+                console.log('weGotNewTodayForList (2nd .$on listening to .$emit  here in 1st .$on) > this ? ', this) // Da Bus! (whoa) Vue$3 {_uid:0}
                 console.log('this.moviesForMovieList: ', this.moviesForMovieList) // undefined. hmm
 // no                var tempMoviesForMovieList = this.moviesForMovieList // ? boh
 // no                this.moviesForMovieList = tempMoviesForMovieList // ? boh

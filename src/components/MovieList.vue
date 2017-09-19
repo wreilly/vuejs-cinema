@@ -94,6 +94,10 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
     // *Plural* "times" : util list of possible times ('Before 6pm') to choose from
     // *Singular* "time" : name of array in main.js data: {}, that holds values like 'Before 6pm', 'After 6pm')
 
+    import { daySelectedMethodUtilBusToCall } from '../util/mybus'
+    // Interesting. Refer to this imported method WITHOUT using 'this.' Okay.
+    // To reference a method on this component's own methods: {} object, you DO use 'this.' Okay.
+
     export default {
     props: ['genresmylist', 'timesmylist', 'moviesForMovieList', 'todayForList' ],
         data: function() {
@@ -115,6 +119,10 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
             'movie-item': MovieItem,
         },
         methods: {
+        /* fwiw : This method here is the "SECOND WAY". daySelectedMethodToCall
+        (The "THIRD WAY" is method over in /UTIL/MYBUS.JS)
+        (The "FIRST WAY" is anonymous function, here in MovieList.vue created() .$on ....)
+        */
             daySelectedMethodToCall(myPayloadThing) {
 
                 console.log('daySelectedMethodToCall what got here? myPayloadThing ~= Moment object no? ', myPayloadThing) // Yes. ok.
@@ -357,7 +365,7 @@ WORKS! 'Ta-da'. :o)
                 } // /noResults()
         }, // /computed()
         created() {
-            // Nothing here anymore... (what was here?) Maybe this console.log was just a test. Okay.
+            // No Longer The Case! --> Nothing here anymore... (what was here?) Maybe this console.log was just a test. Okay.
             console.log('Moment object, from Root Component, seen here in Child Component MovieList.vue (without importing Moment.js) ', this.$moment)
             /*
               ƒ hooks () {
@@ -409,12 +417,27 @@ WORKS! 'Ta-da'. :o)
 
             })
 
+            // LESSON 112
+            /* Okay! A *THIRD* WAY to do this .$on listener stuff!
+            All we are doing is following the Instructor code ~04:26:
+            We re-factor our called method for this out to the /UTIL/MYBUS.JS file.
+            Should work like a charm ;o)
+            */
+// $$$  -03- $$$ CALL A METHOD (/UTIL/MYBUS.JS)  $$$$$$$$$$$$$$$
+            console.log('SECOND WAY (note) (NEEDS this. It is a METHOD on this component. okay.) this.daySelectedMethodToCall from HERE in MovieList.vue ', this.daySelectedMethodToCall)
+            console.log('THIRD WAY (NO this. It is a method on an IMPORTED .JS): daySelectedMethodUtilBusToCall from /util/mybus ', daySelectedMethodUtilBusToCall)
+// Nope:    this.$myBusVueProperty.$on('daySelectedEventCallAMethodUtilBus', this.daySelectedMethodUtilBusToCall.bind(this)) // << No!  If you put a 'this.' here in front of the (imported) method name, it BREAKS!
+            this.$myBusVueProperty.$on('daySelectedEventCallAMethodUtilBus', daySelectedMethodUtilBusToCall.bind(this))
+
             // LESSON 111
             /*
             The .$emit out to the bus comes from DaySelect.vue like so:
               this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
              */
             /* ******* YES WE *ARE* USING THIS: method() ************ */
+// $$$  -02- $$$ CALL A METHOD (HERE)  $$$$$$$$$$$$$$$
+            console.log('SECOND WAY this.daySelectedMethodToCall from HERE in MovieList.vue ', this.daySelectedMethodToCall)
+// Nope!    this.$myBusVueProperty.$on('daySelectedEventCallAMethod', daySelectedMethodToCall.bind(this)) // << If you FAIL to put a 'this.' in front of the method (that belongs to this component's methods: {}), it BREAKS!
             this.$myBusVueProperty.$on('daySelectedEventCallAMethod', this.daySelectedMethodToCall.bind(this))
  /* I followed this example, from Overview.vue: esp. re: use of .bind(this)
 
@@ -422,10 +445,11 @@ WORKS! 'Ta-da'. :o)
 */
 
             // This "in-line" function was NOT doing it for me. We'll try calling a function (above) instead.
-            /* ******* NO - WE ARE *NOT* USING THIS: in-line funct ************ */
+            /* ******* Wrong, son. >> NO - WE ARE *NOT* USING THIS: in-line funct ************ */
             // ******* NEWS FLASH. You *can* use this.
             // Anonymous function (not "in-line")
             // function() {}.bind(this)   // << who knew. put the damned .bind() right off the closing curly brace. hot damn. works.
+// $$$  -01- $$$ ANONYMOUS FUNCT $$$$$$$$$$$$$$$
             this.$myBusVueProperty.$on('daySelectedEvent', function(daySelected) {
 
                 console.log('daySelectedEvent, what is this? ', this) // Vue$3 {_uid:0} << People, we are ON THE BUS!
@@ -515,6 +539,9 @@ WORKS! 'Ta-da'. :o)
                 // Not Working For Me: This experiment in $EMITTING off the 1st $ON, to listen for it on a 2nd $ON. Quite the cwazy pattern. yeesh.)
                 // NEWS FLASH: Hey! Got this to work.
                 // function() {}.bind(this)   // << who knew. put the damned .bind() right off the closing curly brace. hot damn. works.
+
+                // btw - this god damned tail-chase of $emit from inside a $on to a 2nd $on - I ain't even using this stuff any more. See Ya.
+                // I don't believe ANY of that console.logging below gets run and so forth. Don't know. At this point, don't care much neither. (whew)
                 this.$emit('weGotNewTodayForList', this.todayForList)
             }.bind(this))
 

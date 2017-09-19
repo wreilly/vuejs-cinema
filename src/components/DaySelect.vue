@@ -27,6 +27,7 @@ BROWSER APP:
     (May or may not match your SERVER STARTUP 7 days. Cheers.)
      */
     export default {
+        // props: ['selected'], // << Just to note, Instructor does this; also, he deletes the DATA 'selectedDay: moment()' thing below. I am not doing that. Cheers.
         data() {
             return {
                 selectedDay: this.$moment(), // default to "today"
@@ -87,7 +88,10 @@ BROWSER APP:
                 // ******* NEWS FLASH. You *can* use this.
                 // (Over in MovieList.vue: Anonymous function (not "in-line")
                 // function() {}.bind(this)   // << who knew. put the damned .bind() right off the closing curly brace. hot damn. works.
-                this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
+
+// $$$  -01- $$$ ANONYMOUS FUNCT $$$$$$$$$$$$$$$
+//                this.$myBusVueProperty.$emit('daySelectedEvent', this.selectedDay)
+// $$$$$$$$$$$$$$$$$$$$$$
 
                 // For this .$emit, the listener .$on is over on MovieList.vue
                 // Why?
@@ -95,7 +99,15 @@ BROWSER APP:
                 // (Actually, it already did have 'day' in it, it was just baked in that 'day' was "today". We're expanding on that. :o)
                 /* WORKS. 2017-09-18 */
                 // "GOOD" Calls a method
+
+// $$$  -02- $$$ CALL A METHOD (HERE)  $$$$$$$$$$$$$$$
 //                this.$myBusVueProperty.$emit('daySelectedEventCallAMethod', this.selectedDay)
+// $$$$$$$$$$$$$$$$$$$$$$$$
+
+// $$$  -03- $$$ CALL A METHOD over on: (/UTIL/MYBUS.JS)  $$$$$$$$$$$$$$$
+                this.$myBusVueProperty.$emit('daySelectedEventCallAMethodUtilBus', this.selectedDay)
+// $$$$$$$$$$$$$$$$$$$$$$$$
+
             },
           myFormatDay(rawDayObj) {
               if (rawDayObj.isSame(this.$moment(), 'day')) {

@@ -171,6 +171,7 @@ new Vue({
 // Let's not EMIT till we did the GET: << Yes!
                         this.$myBusVueProperty.$emit('mainCreatedMoviesFromAPIPostGet', this.moviesFromApiMain)
 
+
                     })
 
 
@@ -178,5 +179,14 @@ new Vue({
 // ? Move to Overview.vue ( ? ) << YES!
         myBus.$on('check-filter-child-event-bus', myUtilRootCheckFilterBusMethod.bind(this))
 */
-    }
+
+        /* LESSON 112
+        Instructor Code  has more in MAIN.JS that I have moved down to OVERVIEW.VUE.
+        e.g. DATA: { day: moment() }
+        Also, here in created(), he has the .$on listener for the DaySelect .$emit event of "day was selected"
+        I actually have that even further down, in MovieList.vue !
+        Whoa.
+         */
+
+    } // /created()
 })

@@ -1,6 +1,16 @@
 <template>
     <div id="overview">
         <div id="main">
+            <!-- Instructor Code differs some:
+A. Gore passes 'day' as prop from here in Overview.vue to DaySelect.vue, calls it 'selected':
+            v-bind:selected="day"
+
+            N.B. fwiw, his code also originates 'day' as DATA property on MAIN.JS, whereas my WR__ code originates 'day' as PROP on ROUTES.JS ('/' = Overview.vue), which of course is imported by MAIN.JS. There you go.
+
+            Further: WR__ code does not pass any 'day' prop to DaySelect.
+            Instead, on DaySelect, I (re)-use (use again) Moment.js to get my own 'selectedDay' of "today" that is, moment.()  Perhaps not best program design, to use it again like that o well.
+            Hah! I just saw (Lesson 112 ~01:32) that the Instructor Code had originally had this moment() on DaySelect! whaddayano. He then removes it from there; I'm keeping it. Cheers.
+            -->
             <day-select></day-select>
             <movie-list
                     v-bind:genresmylist="genre"

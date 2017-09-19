@@ -26,4 +26,32 @@ function myUtilRootCheckFilterBusMethod(category, title, checked)  {
     }
 }
 
-export { myUtilRootCheckFilterBusMethod }
+/* How called, from MovieList.vue:
+this.$on(
+   'daySelectedEventCallAMethodUtilBus',
+   daySelectedMethodUtilBusToCall)
+    .bind(this)
+    )
+    // N.B. Payload is implicit. Whatever that .$emit sent, that's what you get in here. Cheers.
+ */
+function daySelectedMethodUtilBusToCall(dayPayload) {
+    // Owing to, thanks to, .bind(), 'this' here continues to refer to ... MovieList.vue component (99% sure)
+    // In any event, it is correctly referring to whatever the hell it is that it needs to refer to. :)
+
+    console.log('daySelectedMethodUtilBusToCall -- dayPayload thing ~= Moment object no? ', dayPayload) //
+
+
+    /*
+?     WORKS! 'Ta-da'. :o)
+     */
+
+
+    // We just whamma-jamma this 'day' (I've called it dayPayload, for fun) value (a Moment object) onto our MovieList.vue's PROP which gets called 'todayForList'.
+    // THAT in turn (immediately!?) updates (reactive, Vue.js magic) the MovieList.vue DATA property I called 'todayForListData'. (I know, crazy.)
+    this.todayForListData = dayPayload // whamma. oughta work. methinks.
+
+    console.log('*** GOOD the THIRD (method ON DA BUS to call) *** daySelectedMethodUtilBusToCall() ********************* this.todayForListData now should be same as daySelected: ', this.todayForListData) // YEP
+
+}
+
+export { myUtilRootCheckFilterBusMethod, daySelectedMethodUtilBusToCall }

@@ -50,6 +50,8 @@ function daySelectedMethodUtilBusToCall(dayPayload) {
     // THAT in turn (immediately!?) updates (reactive, Vue.js magic) the MovieList.vue DATA property I called 'todayForListData'. (I know, crazy.)
     this.todayForListData = dayPayload // whamma. oughta work. methinks.
 
+    console.log('daySelected etc. THIS is ? ', this) // << Vue$3 MovieList.vue, kids. Okay. Good.
+
     console.log('*** GOOD the THIRD (method ON DA BUS to call) *** daySelectedMethodUtilBusToCall() ********************* this.todayForListData._d now should be same as daySelected: ', this.todayForListData._d) // YEP
 
 }

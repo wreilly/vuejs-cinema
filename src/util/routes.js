@@ -39,7 +39,10 @@ export default [
         props: {
            // No. Handle myBus stuff up on root/main.js/index.html<router-view>
             // myBus: myBusVue, // << No! undefined. unhappy. :o(
-            day: moment() // << Yes
+
+            day: moment(), // << Yes "today"
+            // day: moment().add(2, 'days') // << Yes "two days from now!" (TESTING, LESSON 113)
+
             // "2017-09-12T10:51:51.512Z"
         }
     },

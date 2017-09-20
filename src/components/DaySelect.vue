@@ -56,9 +56,9 @@ BROWSER APP:
         */
          methods: {
              selectMobile(which) {
-                 console.log('Ye gods 01. selectMobile which: ', which)
+                 console.log('Ye gods 01. selectMobile which: ', which) // Yep inc
                if (which === 'inc') {
-                   console.log('Ye gods 02. selectMobile inside "inc" : ')
+                   console.log('Ye gods 02. selectMobile inside "inc" : ') // << Yep
                    if (this.selectedDay.isSame(this.days[this.days.length])) {
                        // Already on latest available day
                        // Do not increment further
@@ -70,7 +70,17 @@ BROWSER APP:
                        console.log('dayMore._d ', dayMore._d)
                        console.log('dayMore ', dayMore)
                        this.selectedDay = dayMore
+                       console.log('THIS! sigh ', this)
+                       /* Ah CRAP.
+                       I (once again) have made SAME MISTAKE.
+                       My assignment of 'dayMore' to "this.selectedDay" is ***NOT*** doing what I thought it was.
+                       'this' here is Vue$3 {_uid:3} namely just this stupid DaySelect.vue component.
+                       It is ***NOT*** getting the value assigned to
+hang on
+                       */
                        console.log('Ye gods 04. selectMobile Okay to increment : this.selectedDay._d AFTER ', this.selectedDay._d) // YES!  AFTER  Fri Sep 22 2017
+                       // New. Instead of ".$emitting" from inside this method, let's call another one to handle that. cheers
+                       this.selectDayTakesDay(dayMore)
                    }
                }  else {
                    // 'dec'
@@ -82,9 +92,12 @@ BROWSER APP:
                        // Do not decrement further
                        console.log('OOPS. It is today. Cannot go back in time this.selectedDay ', this.selectedDay._d)
                    } else {
+                       // http://momentjs.com/docs/#/manipulating/subtract/
                        var dayLess = this.selectedDay.subtract(1, 'days')
                        console.log('dayLess._d ', dayLess._d)
                        this.selectedDay = dayLess
+                       // New. Instead of ".$emitting" from inside this method, let's call another one to handle that. cheers
+                       this.selectDayTakesDay(dayLess)
                    }
                }
                  /* Hah. Hmm. If I'm lucky, here on the MOBILE "click" event, I can call the SAME DAMN METHOD (on the Bus), to do the Big Change (on this.selectedDate).
@@ -93,12 +106,19 @@ BROWSER APP:
                   Well, seems N-O-T. Hmmph.
                   */
                  // $$$  -03AMOBILE- $$$ CALL A METHOD over on: (/UTIL/MYBUS.JS)  $$$$$$$$$$$$$$$
-                 this.$myBusVueProperty.$emit('daySelectedEventCallAMethodUtilBus', this.selectedDay)
+//                 this.$myBusVueProperty.$emit('daySelectedEventCallAMethodUtilBus', this.selectedDay)
 // $$$$$$$$$$$$$$$$$$$$$$$$
              },
             isActive(dayMomentObject) {
               return dayMomentObject.isSame(this.selectedDay, 'day')
             },
+             selectDayTakesDay(dayItTakes) {
+               // same as selectDay(event) except simplified to just take a Moment object for the day. Good luck
+                 console.log('selectDayTakesDay fer chrissakes. dayItTakes._d ', dayItTakes._d)
+                 // $$$  -03AB-MOBILE-TakesDay- $$$ CALL A METHOD over on: (/UTIL/MYBUS.JS)  $$$$$$$$$$$$$$$
+                 this.$myBusVueProperty.$emit('daySelectedEventCallAMethodUtilBus', dayItTakes)
+// $$$$$$$$$$$$$$$$$$$$$$$$
+             },
             selectDay(dayClickedEvent) {
                 // Q. A Moment object, n'est-ce pas?
                 // A. Oui: isAMomentObject: true
@@ -169,7 +189,7 @@ BROWSER APP:
         created() {
             // NOT USED:
             let daySelectorToday = this.$moment()
-            console.log('NEW! daySelectorToday is: ', daySelectorToday)
+            console.log('NEW! daySelectorToday is: << Not Used! ', daySelectorToday)
             /*
       DaySelect.vue?9a66:21
       NEW! daySelectorToday is:  Moment {_isAMomentObject: true, …}

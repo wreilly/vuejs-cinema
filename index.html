@@ -13,7 +13,21 @@
     </style>
 </head>
 <body>
-<div id="app">
+
+<!-- (A note from Lesson 57 (Project 1 Posters)):
+In Project 1, the CSS definition for 'v-cloak' as a CSS class is in
+/public/style.css
+which is loaded just above, *prior* to the v-cloak invocation.
+Bon.
+-->
+<!-- LESSON 121 from Project 2 Vue-Cinema
+Here in Project 2 we see that SCSS is used, with Webpack
+(more sophisticated), but this approach means the CSS (defining 'v-cloak')
+is *not* loaded before the line like the one below.
+So - the fix here in Project 2 is to hard-code a bit of style definition
+in the index.html page head. No biggie. Cheers.
+-->
+<div id="app" v-cloak>
     <div id="title">
         <img src="/public/logo.png">
         <h1>WR__ Overview Component: Vue.js Cinema</h1>
@@ -51,13 +65,52 @@
             v-bind:my-bus-vue-data-prop="myBusVueDataProp"></router-view>
  -->
 
-    <!-- ATTEMPT # 3 -->
+    <!-- ATTEMPT # 3 << Failed I take it. -->
     <!--<router-view v-bind:my-bus-vue-data-prop-new="myBusVueDataPropNew"></router-view>-->
-    <!-- ATTEMPT # 3AA -->
-    <router-view
-            v-bind:my-bus-vue-data-prop-new="myBusVueDataName"
-    v-bind:movies-from-api-main-to-detail="moviesFromApiMain"></router-view>
-    <!-- ATTEMPT # 3A -->
+
+    <!-- ATTEMPT # 3AA << WORKING! -->
+    <!-- LESSON 120 KEEP-ALIVE Tells vue-router to *not* destroy "stuff" (?) made upon routing ... (hmm)
+    https://vuejs.org/v2/api/#keep-alive
+    "caches the inactive component instances without destroying them."
+
+*** WITH *** <keep-alive> : You get "inactive" router-view shown
+N.B. This appears AFTER you have clicked on a link to go to the 2nd router-view option.
+After you have clicked through on a Detail page.
+
+    VUE DEV TOOL:
+    OVERVIEW PAGE:
+    http://localhost:8000/#/
+    <Root>
+      <Overview> == $vm0 (router-view)
+      <Detail> (grayed back: router-view inactive)
+
+    DETAIL PAGE:
+    http://localhost:8000/#/movie/tt1172203
+    <Root>
+      <Overview> == $vm0 (grayed back: router-view inactive)
+      <Detail> (router-view: /movie/:id)
+***
+
+Without <keep-alive>: No "inactive" shown; doesn't exist. Cheers.
+    VUE DEV TOOL:
+    OVERVIEW PAGE:
+    http://localhost:8000/#/
+    <Root>
+      <Overview> (router-view)
+
+    DETAIL PAGE:
+    http://localhost:8000/#/movie/tt1172203
+    <Root>
+      <Detail> (router-view: /movie/:id)
+***
+    -->
+    <keep-alive>
+        <router-view
+                v-bind:my-bus-vue-data-prop-new="myBusVueDataName"
+                v-bind:movies-from-api-main-to-detail="moviesFromApiMain"></router-view>
+    </keep-alive>
+
+    <!-- ATTEMPT # 3A << Failed I take it.  -->
     <!--<router-view v-bind:my-bus-vue-data-prop-new-pass="myBusVueDataPropNew"></router-view>-->
 
 </div>

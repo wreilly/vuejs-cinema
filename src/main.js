@@ -82,6 +82,10 @@ const myRouter = new VueRouter({
 */
 })
 
+// LESSON 119 PLUGINS
+import Tooltip from './util/tooltip'
+Vue.use(Tooltip)
+
 new Vue({
     el: '#app',
     data: {
@@ -190,3 +194,26 @@ new Vue({
 
     } // /created()
 })
+
+
+/* We want to add SPAN with Seats info:
+
+ <div class="movie-sessions>
+  <div class="session-time-wrapper tooltip-wrapper"
+ v-tooltip="{ seats: movieSession.seats }">
+   <div class="session-time">
+ e.g. 1:00 PM
+   </div>
+   <span class="tooltip tooltip-show">Seats: 188</span>
+  </div>
+
+  <div class="session-time-wrapper tooltip-wrapper"
+ v-tooltip="{ seats: movieSession.seats }">
+   <div class="session-time">
+ e.g. 2:00 PM
+   </div>
+   <span class="tooltip tooltip-show">Seats: 56</span>
+  </div>
+ </div>
+
+ */

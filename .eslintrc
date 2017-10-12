@@ -1,0 +1,30 @@
+{ // https://youtrack.jetbrains.com/issue/WEB-27868
+  "root": true,
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "__THEME": true,
+    "Velocity": true
+  },
+  "extends": ["standard"],
+  "plugins": [
+    "html"
+  ],
+  "rules": {
+    "arrow-parens": 0,
+    "semi": 1,
+    "one-var": 0,
+    "brace-style": [
+      2,
+      "stroustrup",
+      {
+        "allowSingleLine": true
+      }
+    ]
+  }
+}

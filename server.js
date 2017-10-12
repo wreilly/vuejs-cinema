@@ -7,10 +7,12 @@ const fs = require('fs');
 const api = require('./api');
 
 if (process.env.NODE_ENV === 'development') {
+  console.log('YEAH WE\'RE IN *DEVELOPMENT* (see .env)')
   require('./webpack-dev-middleware').init(app);
 }
 
 if (process.env.NODE_ENV === 'production') {
+    console.log('YEAH WE\'RE IN *PRODUCTION* (see .env)')
   app.use('/dist', express.static(path.join(__dirname, 'dist')));
 }
 

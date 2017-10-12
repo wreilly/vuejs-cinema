@@ -61,10 +61,13 @@ import MovieFilter from './MovieFilter.vue'
         props: ['day', 'myBusVue'],
 */
         /* Interesting. 'myBusVue' NOT NEEDED (!)
-        Discovering (finally) that this passing in of the Object.definedProperty() 'myBusVue' here, as a v-bound prop from index.html/Root-component, down here to child Overview.vue component, is NOT NEEDED!
+        Discovering (finally) that this passing in of the Object.definedProperty() 'myBusVue' here,
+        as a v-bound prop from index.html/Root-component, down here to child Overview.vue component, is NOT NEEDED!
         I sort of knew that.
-        That is, the whole point of defining a property on the Vue object prototype, up in main.js-root-component code, is to AVOID the need to sling it around the Vue app in props.
-        We WANT to be able to sort of "globally" reference it from child and grand-child components with ease: this.$mything, and this.$root.$mything. No props called for. Cheers.
+        That is, the whole point of defining a property on the Vue object prototype, up in main.js-root-component code,
+        is to AVOID the need to sling it around the Vue app in props.
+        We WANT to be able to sort of "globally" reference it from child and grand-child components
+        with ease: this.$mything, and this.$root.$mything. No props called for. Cheers.
         Of course, the passed-in prop can benignly sit here, no biggie.
         You can console.log() it to your heart's (and keyboarding fingers') content.
         */

@@ -60,7 +60,19 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
 <!--  Now Like This, here in parent MovieList:
  (retain the 'movie.sessions', simply. Cheers.)
  -->
-                            <div v-for="movieSession in filteredMovieSessionsByDayByTimeMethod(movie.sessions)" class="session-time-wrapper">
+                            <!-- LESSON 115 Tooltip Custom Directive: 'v-mytooltip' re: seats.
+ "sessions": [
+      {
+        "time": "2017-01-29T13:00:00.000Z",
+        "seats": 177
+      },
+                            -->
+
+<!--  This is the DIV  that is 'el' in our v-tooltip DIRECTIVE: class="session-time-wrapper tooltip-wrapper" -->
+                            <div
+                                    v-for="movieSession in filteredMovieSessionsByDayByTimeMethod(movie.sessions)"
+                                    class="session-time-wrapper tooltip-wrapper"
+                            v-tooltip="{ seats: movieSession.seats }">
                                 <!-- First one, let's Comment more: -->
 
                                 <!-- same little change: movie.sessions  *****
@@ -75,6 +87,12 @@ MovieList had: v-bind:movie-sessions="movie.sessions"
                                 <div v-else class="session-time">
                                         {{ gimmeMovieSessionTime(movieSession) }}
                                 </div>
+
+ <!-- No Longer Needed, here in template. :o)
+ Now comes from MAIN.JS directive code.
+
+                                <span class="tooltip tooltip-show">HardCodeTemplated: Seats available {{ movieSession.seats }}</span>
+-->
                             </div>
                         </div>
                         <!-- /End of slot markup -->

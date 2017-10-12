@@ -41,7 +41,7 @@ There is a slot over in MovieItem.vue
 -->
             <movie-item
                     v-bind:movie-item-thing-foo-bar="thisDetailMovie">
-                Ship ahoy we're INSIDE movie-item
+                Ship ahoy we're INSIDE movie-item (from Detail.vue)
                 <div class="movie-details">
                     <p class="movie-genre">{{ thisDetailMovie.Genre }}</p>
                     <p class="movie-plot">{{ thisDetailMovie.Plot }}</p>
